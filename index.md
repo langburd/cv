@@ -22,9 +22,8 @@ A self-motivated, creative problem solver, adept at quickly troubleshooting and 
 ## Technical knowledge and skills
 
 - Cloud Solution Architect for Microsoft Azure, Amazon Web Services, and Google Cloud Platform (GCP)
-- Cloud security and networking: Cloudflare, CDKTF
 - CI/CD: Git, Docker, Helm, Kubernetes, ArgoCD, Jenkins, GitLab CI, GitHub Actions, Artifactory
-- Configuration management and IaC: extensive experience with Ansible and Terraform/Terragrunt
+- Configuration management and IaC: extensive experience with Ansible, Terraform/Terragrunt, and CDKTF
 - Web/Proxy servers and load balancers: Nginx, Apache, HAProxy, Microsoft IIS, F5
 - Monitoring/Logging/APM: Prometheus, ELK Stack, Grafana, Zabbix, Logentries, New Relic, Xpolog
 - Databases: MS SQL, MySQL, MongoDB, Hadoop, Elasticsearch, InfluxDB
@@ -32,7 +31,7 @@ A self-motivated, creative problem solver, adept at quickly troubleshooting and 
 - Linux: extensive experience in administration of various OS flavors (CentOS, Ubuntu, etc.)
 - Windows Servers: broad knowledge in AD, GPO, DNS, DHCP and Windows internals
 - Virtualization: KVM-based (oVirt/Proxmox), VMware vSphere, Microsoft Hyper-V
-- Networking: LAN/WAN/VLAN/WLAN architectures, various VPN implementations
+- Networking: LAN/WAN/VLAN/WLAN architectures, various VPN implementations, Cloudflare
 - Programming/script languages: Python, Bash, PowerShell
 
 ## Work Experience
