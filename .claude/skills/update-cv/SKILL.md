@@ -50,7 +50,7 @@ Key conventions:
    ```
 5. Push:
    ```bash
-   git push origin master
+   git push origin master  # Direct push intentional — GitHub Pages auto-deploys from master
    ```
 6. Confirm push succeeded — GitHub Pages will rebuild automatically in ~60 seconds
 

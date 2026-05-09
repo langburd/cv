@@ -22,6 +22,8 @@ jekyll build   # builds to _site/
 
 No Gemfile — uses system Jekyll. No npm, no build tools.
 
+Jekyll binary is at `/opt/terraspace/embedded/bin/jekyll` — ensure this is on your PATH (added via `~/.zshenv` on the primary dev machine).
+
 ## Style Themes
 
 Two themes available: `kjhealy` (default) and `davewhipp` (bigger fonts, right-aligned dates).
