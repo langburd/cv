@@ -14,7 +14,7 @@ Phone: <a href="tel:+972548117417">+972548117417</a> | E-mail: <a href="mailto:a
 
 ## Summary and Expertise
 
-Highly skilled and experienced Senior DevOps Engineer with a comprehensive understanding of the application lifecycle, cloud technologies, operating systems, virtualization, networking, and security. Proven track record of designing, planning, implementing, and managing efficient DevOps and cloud operations and processes. With over a decade of industry experience, I bring a wealth of knowledge to drive innovative solutions. A self-motivated, creative problem solver, adept at quickly troubleshooting and resolving complex issues.
+Highly skilled and experienced Cloud & Security Architect with a comprehensive understanding of the application lifecycle, multi-cloud technologies, operating systems, virtualization, networking, and security. Proven track record of designing, planning, implementing, and managing efficient DevOps, DevSecOps, and cloud operations and processes. With over a decade of industry experience, I bring a wealth of knowledge to drive innovative solutions. A self-motivated, creative problem solver, adept at quickly troubleshooting and resolving complex issues.
 
 ## Technical knowledge and skills
 
