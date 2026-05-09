@@ -10,7 +10,7 @@ Jekyll static site — a Markdown CV rendered to HTML and PDF via CSS. Hosted on
 
 - `index.md` — the CV content (only file that needs editing for CV updates)
 - `_config.yml` — Jekyll config; `style` key sets the active CSS theme
-- `media/` — CSS stylesheets (`kjhealy-screen.css`, `kjhealy-print.css`, `davewhipp-screen.css`, `davewhipp-print.css`)
+- `media/` — CSS stylesheets (`langburd-screen.css`, `langburd-print.css`)
 - `_layouts/cv.html` — single layout template; links CSS based on `site.style`
 
 ## Local Development
@@ -26,12 +26,7 @@ Jekyll binary is at `/opt/terraspace/embedded/bin/jekyll` — ensure this is on 
 
 ## Style Themes
 
-Two themes available: `kjhealy` (default) and `davewhipp` (bigger fonts, right-aligned dates).
-
-To switch, edit `_config.yml`:
-```yaml
-style: davewhipp
-```
+One theme: `langburd`. Active via `_config.yml`: `style: langburd`.
 
 ## PDF Export
 
@@ -44,5 +39,5 @@ Push to `master` — GitHub Pages builds and deploys automatically via native Je
 ## What to Avoid
 
 - Do not add a Gemfile unless explicitly requested — the site intentionally runs on system Jekyll.
-- Do not modify `_layouts/cv.html` or `media/*.css` unless explicitly asked to change layout or styling.
+- Do not modify `_layouts/cv.html` unless explicitly asked to change layout.
 - Do not add new files to the root unless they serve a clear purpose (the site is intentionally minimal).
