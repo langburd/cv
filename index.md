@@ -4,7 +4,7 @@ title: Avi Langburd's CV
 ---
 # Avi Langburd
 
-Senior DevOps Engineer
+Cloud & Security Architect | Multi-Cloud DevOps Expert | Kubernetes, IaC & GitOps Enthusiast | DevSecOps Practitioner
 
 <!-- <a href=""></a> -->
 
@@ -18,7 +18,8 @@ Highly skilled and experienced Senior DevOps Engineer with a comprehensive under
 
 ## Technical knowledge and skills
 
-- Cloud Solution Architect for Microsoft Azure and Amazon Web Services
+- Cloud Solution Architect for Microsoft Azure, Amazon Web Services, and Google Cloud Platform (GCP)
+- Cloud security and networking: Cloudflare, CDKTF
 - CI/CD: Git, Docker, Helm, Kubernetes, ArgoCD, Jenkins, GitLab CI, GitHub Actions, Artifactory
 - Configuration management and IaC: extensive experience with Ansible and Terraform/Terragrunt
 - Web/Proxy servers and load balancers: Nginx, Apache, HAProxy, Microsoft IIS, F5
@@ -34,13 +35,20 @@ Highly skilled and experienced Senior DevOps Engineer with a comprehensive under
 ## Work Experience
 
 `2024 – Now`
-__Mend.io__ – __Senior DevOps Engineer__
+__Axonius__ – __Senior Cloud Infrastructure Engineer__
+
+`2024 – 2024`
+__Mend.io__ – __Senior DevSecOps Engineer__
+
+- Ensuring security measures are in place for all company processes, including organizational, developmental, and infrastructure aspects.
+- Refactoring multi-cloud infrastructure (AWS and Azure) using Infrastructure as Code best practices.
+- Designing and implementing CI/CD pipelines for several products using GitHub Actions reusable workflows.
 
 `2023 – 2024`
 __BigPanda__ – __Senior DevOps Engineer__ via Tikal
 
 - Migrating AWS serverless workloads from ClickOps to Infrastructure as Code using Terraform.
-- Creating the CI/CD processes for AWS serverless applications using TravisCI and GitHub Actions.
+- Creating the CI/CD processes for AWS serverless applications using TravisCI, Crossplane and ArgoCD.
 - Working with globally distributed R&D teams.
 
 `2019 – 2024`
@@ -77,7 +85,7 @@ __CodeOasis__ – __IT and DevOps Tech Lead__
 - Supported development processes with continuous integration and continuous delivery, led the DevOps culture in the company. Unified development, testing, and production environments using Docker containerization on all stages of the product's life cycle.
 - Optimized infrastructure costs by implementing IaC practice and using auto-scalable systems.
 
-`2014 – 2016`
+`2014 – 2017`
 __Fixico__ (startup) – __Senior System Administrator & IT Ops Lead__
 
 - Managed and maintained mission-critical servers in production, pre-production, testing, and development environments, hosted on-premise (VMware) and on multiple clouds.
@@ -124,6 +132,6 @@ Microsoft Certified IT Professional (__MCITP__) Windows Server 2008 at College o
 
 `1994-1999` __Master’s Degree in Finance and Banking__ at Central Ukrainian National Technical University, Ukraine
 
-Languages: Hebrew – fluent, English – fluent, Russian – mother tongue.
+Languages: Hebrew – fluent, English – fluent, Russian – mother tongue, Ukrainian – fluent.
 
 Recommendations would be provided on request.
