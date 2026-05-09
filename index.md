@@ -4,7 +4,7 @@ title: Avi Langburd's CV
 ---
 # Avi Langburd
 
-Senior DevOps Engineer
+Cloud & Security Architect · Multi-Cloud DevOps Expert · Kubernetes, IaC & GitOps Enthusiast · DevSecOps Practitioner
 
 <!-- <a href=""></a> -->
 
@@ -14,13 +14,16 @@ Phone: <a href="tel:+972548117417">+972548117417</a> | E-mail: <a href="mailto:a
 
 ## Summary and Expertise
 
-Highly skilled and experienced Senior DevOps Engineer with a comprehensive understanding of the application lifecycle, cloud technologies, operating systems, virtualization, networking, and security. Proven track record of designing, planning, implementing, and managing efficient DevOps and cloud operations and processes. With over a decade of industry experience, I bring a wealth of knowledge to drive innovative solutions. A self-motivated, creative problem solver, adept at quickly troubleshooting and resolving complex issues.
+Highly skilled and experienced Cloud & Security Architect with a comprehensive understanding of the application lifecycle, multi-cloud technologies, operating systems, virtualization, networking, and security.<br>
+Proven track record of designing, planning, implementing, and managing efficient DevOps, DevSecOps, and cloud operations and processes.<br>
+With over a decade of industry experience, I bring a wealth of knowledge to drive innovative solutions.<br>
+A self-motivated, creative problem solver, adept at quickly troubleshooting and resolving complex issues.
 
 ## Technical knowledge and skills
 
-- Cloud Solution Architect for Microsoft Azure and Amazon Web Services
+- Cloud Solution Architect for Microsoft Azure, Amazon Web Services, and Google Cloud Platform (GCP)
 - CI/CD: Git, Docker, Helm, Kubernetes, ArgoCD, Jenkins, GitLab CI, GitHub Actions, Artifactory
-- Configuration management and IaC: extensive experience with Ansible and Terraform/Terragrunt
+- Configuration management and IaC: extensive experience with Ansible, Terraform/Terragrunt, and CDKTF
 - Web/Proxy servers and load balancers: Nginx, Apache, HAProxy, Microsoft IIS, F5
 - Monitoring/Logging/APM: Prometheus, ELK Stack, Grafana, Zabbix, Logentries, New Relic, Xpolog
 - Databases: MS SQL, MySQL, MongoDB, Hadoop, Elasticsearch, InfluxDB
@@ -28,19 +31,26 @@ Highly skilled and experienced Senior DevOps Engineer with a comprehensive under
 - Linux: extensive experience in administration of various OS flavors (CentOS, Ubuntu, etc.)
 - Windows Servers: broad knowledge in AD, GPO, DNS, DHCP and Windows internals
 - Virtualization: KVM-based (oVirt/Proxmox), VMware vSphere, Microsoft Hyper-V
-- Networking: LAN/WAN/VLAN/WLAN architectures, various VPN implementations
+- Networking: LAN/WAN/VLAN/WLAN architectures, various VPN implementations, Cloudflare
 - Programming/script languages: Python, Bash, PowerShell
 
 ## Work Experience
 
 `2024 – Now`
-__Mend.io__ – __Senior DevOps Engineer__
+__Axonius__ – __Senior Cloud Infrastructure Engineer__
+
+`2024 – 2024`
+__Mend.io__ – __Senior DevSecOps Engineer__
+
+- Ensuring security measures are in place for all company processes, including organizational, developmental, and infrastructure aspects.
+- Refactoring multi-cloud infrastructure (AWS and Azure) using Infrastructure as Code best practices.
+- Designing and implementing CI/CD pipelines for several products using GitHub Actions reusable workflows.
 
 `2023 – 2024`
 __BigPanda__ – __Senior DevOps Engineer__ via Tikal
 
 - Migrating AWS serverless workloads from ClickOps to Infrastructure as Code using Terraform.
-- Creating the CI/CD processes for AWS serverless applications using TravisCI and GitHub Actions.
+- Creating the CI/CD processes for AWS serverless applications using TravisCI, Crossplane and ArgoCD.
 - Working with globally distributed R&D teams.
 
 `2019 – 2024`
@@ -77,7 +87,7 @@ __CodeOasis__ – __IT and DevOps Tech Lead__
 - Supported development processes with continuous integration and continuous delivery, led the DevOps culture in the company. Unified development, testing, and production environments using Docker containerization on all stages of the product's life cycle.
 - Optimized infrastructure costs by implementing IaC practice and using auto-scalable systems.
 
-`2014 – 2016`
+`2014 – 2017`
 __Fixico__ (startup) – __Senior System Administrator & IT Ops Lead__
 
 - Managed and maintained mission-critical servers in production, pre-production, testing, and development environments, hosted on-premise (VMware) and on multiple clouds.
@@ -124,6 +134,11 @@ Microsoft Certified IT Professional (__MCITP__) Windows Server 2008 at College o
 
 `1994-1999` __Master’s Degree in Finance and Banking__ at Central Ukrainian National Technical University, Ukraine
 
-Languages: Hebrew – fluent, English – fluent, Russian – mother tongue.
+## Languages
+
+- __English__ – full professional proficiency
+- __Hebrew__ – full professional proficiency
+- __Russian__ – native
+- __Ukrainian__ – fluent
 
 Recommendations would be provided on request.
