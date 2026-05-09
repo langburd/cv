@@ -4,7 +4,7 @@ title: Avi Langburd's CV
 ---
 # Avi Langburd
 
-Cloud & Security Architect | Multi-Cloud DevOps Expert | Kubernetes, IaC & GitOps Enthusiast | DevSecOps Practitioner
+Cloud & Security Architect · Multi-Cloud DevOps Expert · Kubernetes, IaC & GitOps Enthusiast · DevSecOps Practitioner
 
 <!-- <a href=""></a> -->
 
@@ -14,7 +14,10 @@ Phone: <a href="tel:+972548117417">+972548117417</a> | E-mail: <a href="mailto:a
 
 ## Summary and Expertise
 
-Highly skilled and experienced Cloud & Security Architect with a comprehensive understanding of the application lifecycle, multi-cloud technologies, operating systems, virtualization, networking, and security. Proven track record of designing, planning, implementing, and managing efficient DevOps, DevSecOps, and cloud operations and processes. With over a decade of industry experience, I bring a wealth of knowledge to drive innovative solutions. A self-motivated, creative problem solver, adept at quickly troubleshooting and resolving complex issues.
+Highly skilled and experienced Cloud & Security Architect with a comprehensive understanding of the application lifecycle, multi-cloud technologies, operating systems, virtualization, networking, and security.<br>
+Proven track record of designing, planning, implementing, and managing efficient DevOps, DevSecOps, and cloud operations and processes.<br>
+With over a decade of industry experience, I bring a wealth of knowledge to drive innovative solutions.<br>
+A self-motivated, creative problem solver, adept at quickly troubleshooting and resolving complex issues.
 
 ## Technical knowledge and skills
 
@@ -132,6 +135,11 @@ Microsoft Certified IT Professional (__MCITP__) Windows Server 2008 at College o
 
 `1994-1999` __Master’s Degree in Finance and Banking__ at Central Ukrainian National Technical University, Ukraine
 
-Languages: Hebrew – fluent, English – fluent, Russian – mother tongue, Ukrainian – fluent.
+## Languages
+
+- __English__ – full professional proficiency
+- __Hebrew__ – full professional proficiency
+- __Russian__ – native
+- __Ukrainian__ – native or bilingual proficiency
 
 Recommendations would be provided on request.
