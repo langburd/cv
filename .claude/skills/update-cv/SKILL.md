@@ -40,19 +40,24 @@ Key conventions:
 
 ### Steps
 
-1. Read current `index.md` to understand existing structure before making changes
-2. Make the requested edits — surgical changes only, preserve formatting conventions
-3. Verify the file still has valid YAML front matter (`---` block at top)
-4. Commit:
+1. Create a new branch:
+   ```bash
+   git checkout -b cv/<short-description>
+   ```
+2. Read current `index.md` to understand existing structure before making changes
+3. Make the requested edits — surgical changes only, preserve formatting conventions
+4. Verify the file still has valid YAML front matter (`---` block at top)
+5. Commit:
    ```bash
    git add index.md
    git commit -m "cv: <describe what changed>"
    ```
-5. Push:
+6. Open a PR:
    ```bash
-   git push origin master  # Direct push intentional — GitHub Pages auto-deploys from master
+   git push origin HEAD
    ```
-6. Confirm push succeeded — GitHub Pages will rebuild automatically in ~60 seconds
+   Then open a PR on GitHub targeting `master`. GitHub Pages rebuilds automatically after merge (~60 seconds).
+7. Confirm merge succeeded and GitHub Pages rebuilt
 
 **Optional local preview before push:**
 ```bash
