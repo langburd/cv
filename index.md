@@ -140,6 +140,6 @@ Microsoft Certified IT Professional (__MCITP__) Windows Server 2008 at College o
 - __English__ – full professional proficiency
 - __Hebrew__ – full professional proficiency
 - __Russian__ – native
-- __Ukrainian__ – native or bilingual proficiency
+- __Ukrainian__ – fluent
 
 Recommendations would be provided on request.

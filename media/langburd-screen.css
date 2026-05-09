@@ -56,17 +56,6 @@ h1 + p {
 	color: #333;
 }
 
-/* fallback if kramdown still renders subtitle as table */
-h1 + table {
-	width: 100%;
-	margin-bottom: 0.4em;
-}
-h1 + table td {
-	text-align: center;
-	border: none;
-	padding: 0 0.3em;
-}
-
 #webaddress {
 	text-align: center;
 	font-size: 0.88em;
