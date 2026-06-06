@@ -11,11 +11,11 @@ Usage: fetch-prs.sh --author <user> --org <org> [--mode authored-all|reviewed] [
   --org <org>       GitHub org/owner to scope the search to (required)
   --mode <mode>     authored-all | reviewed. Omit to produce BOTH datasets.
   --out <dir>       Output base directory (default: .cv-data); files are written
-                    under <out>/<org>/
+                    under <out>/<org>/<author>/
 
 Produces:
-  authored-all -> <out>/<org>/prs-authored.json   (any-state PRs the author opened)
-  reviewed     -> <out>/<org>/prs-reviewed.json    (author's merged PRs + PRs they reviewed)
+  authored-all -> <out>/<org>/<author>/prs-authored.json   (any-state PRs the author opened)
+  reviewed     -> <out>/<org>/<author>/prs-reviewed.json    (author's merged PRs + PRs they reviewed)
 USAGE
 }
 
@@ -215,21 +215,22 @@ write_dataset() {
   local generated_at
   generated_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-  jq -n \
+  # Stream $normalized via stdin rather than --argjson: a large PR set blows past
+  # ARG_MAX as a command-line argument ("Argument list too long").
+  printf '%s' "${normalized}" | jq \
     --arg generated_at "${generated_at}" \
     --arg mode "${mode}" \
     --arg author "${AUTHOR}" \
     --arg org "${ORG}" \
-    --argjson prs "${normalized}" \
     '{generated_at: $generated_at, mode: $mode, author: $author, org: $org,
-      pr_count: ($prs | length), prs: $prs}' > "${outfile}"
+      pr_count: (. | length), prs: .}' > "${outfile}"
 
   local count
   count=$(jq '.pr_count' "${outfile}")
   echo "Wrote ${count} PRs -> ${outfile}" >&2
 }
 
-OUTDIR="${OUT}/${ORG}"
+OUTDIR="${OUT}/${ORG}/${AUTHOR}"
 mkdir -p "${OUTDIR}"
 
 run_authored() {

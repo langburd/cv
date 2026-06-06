@@ -10,7 +10,7 @@ Turn a PR-activity JSON file into 5–6 CV achievement bullets for one job entry
 ## Input contract
 
 The user supplies a path to ONE JSON file produced by `fetch-prs.sh` (written to
-`<out>/<org>/prs-authored.json` or `<out>/<org>/prs-reviewed.json`). Its shape:
+`<out>/<org>/<author>/prs-authored.json` or `<out>/<org>/<author>/prs-reviewed.json`). Its shape:
 
 ```json
 { "generated_at": "...", "mode": "authored-all|reviewed",

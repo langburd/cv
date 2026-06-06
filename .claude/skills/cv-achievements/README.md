@@ -30,12 +30,12 @@ JSON file — neither calls the other.
 | `--author` | yes | — | GitHub username to fetch PRs for |
 | `--org` | yes | — | GitHub org/owner to scope to |
 | `--mode` | no | both | `authored-all` or `reviewed`; omit for both |
-| `--out` | no | `.cv-data` | output base directory; files land under `<out>/<org>/` (default `.cv-data/<org>/`) |
+| `--out` | no | `.cv-data` | output base directory; files land under `<out>/<org>/<author>/` (default `.cv-data/<org>/<author>/`) |
 
-Output (gitignored, never committed) — files are scoped per org under `<out>/<org>/`:
+Output (gitignored, never committed) — files are scoped per org and author under `<out>/<org>/<author>/`:
 
-- `.cv-data/<org>/prs-authored.json` — PRs you opened (any state) → "led / built" voice.
-- `.cv-data/<org>/prs-reviewed.json` — your merged PRs + PRs you reviewed → "participated" voice.
+- `.cv-data/<org>/<author>/prs-authored.json` — PRs you opened (any state) → "led / built" voice.
+- `.cv-data/<org>/<author>/prs-reviewed.json` — your merged PRs + PRs you reviewed → "participated" voice.
 
 Hundreds of PRs are fine — the script pages via GraphQL and sleeps/retries on
 rate limits (up to 5 attempts before giving up). A large fetch may take a few
@@ -57,7 +57,7 @@ narrow the query (e.g. by date range) if you see it.
 
 Ask Claude to use the `cv-achievements` skill and point it at one JSON file, e.g.:
 
-> Use the cv-achievements skill on `.cv-data/acme/prs-authored.json`.
+> Use the cv-achievements skill on `.cv-data/acme/octocat/prs-authored.json`.
 
 The skill reads the `mode` field to pick the voice, analyzes the PRs, and prints
 5–6 candidate bullets. It does **not** edit your CV yet.
