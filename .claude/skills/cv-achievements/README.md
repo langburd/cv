@@ -37,18 +37,21 @@ Output (gitignored, never committed) — files are scoped per org and author und
 - `.cv-data/<org>/<author>/prs-authored.json` — PRs you opened (any state) → "led / built" voice.
 - `.cv-data/<org>/<author>/prs-reviewed.json` — PRs by *others* that you reviewed (your own PRs are excluded, so the two files don't overlap) → "participated" voice.
 
-Hundreds of PRs are fine — the script pages via GraphQL and sleeps/retries on
-rate limits (up to 5 attempts before giving up). A large fetch may take a few
-minutes.
+Thousands of PRs are fine — the script pages via GraphQL and sleeps/retries on
+rate limits (up to 5 attempts before giving up). GitHub's search API caps any
+single query at 1000 results, so the script partitions each query into UTC date
+windows and recursively bisects any window that hits the cap, then merges and
+de-duplicates — the full history is collected even past 1000. The extra windowed
+queries make a large fetch take a few minutes.
 
-If a dataset is partial, the script prints a `Warning:` line on stderr **and**
-stamps `"incomplete": true` plus `"incomplete_reasons": [...]` into the JSON, so
-the skill can flag it too. Causes:
+If a dataset is still partial, the script prints a `Warning:` line on stderr
+**and** stamps `"incomplete": true` plus `"incomplete_reasons": [...]` into the
+JSON, so the skill can flag it too. Remaining causes:
 
-- GitHub's search API caps any query at 1000 results — narrow it (e.g. by date
-  range) if you hit the cap.
 - A PR with more than 100 files or 100 commits has its file/commit list
   truncated (sub-connections are not paged).
+- A single calendar day with more than 1000 matching PRs — unsplittable, so that
+  day is truncated. Astronomically unlikely for one author.
 
 ### Examples
 

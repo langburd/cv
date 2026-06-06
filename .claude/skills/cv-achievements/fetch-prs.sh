@@ -63,15 +63,96 @@ SEARCH_RESULT_CAP=1000
 FILES_PAGE=100
 COMMITS_PAGE=100
 # Accumulates human-readable reasons a dataset is incomplete; reset per dataset
-# in write_dataset, appended by fetch_search, stamped into the JSON wrapper.
+# in write_dataset, appended by fetch_search/fetch_windowed, stamped into the
+# JSON wrapper.
 INCOMPLETE_REASONS=()
 
-# fetch_search QUERY_STRING
+# Earliest date to search from when partitioning a query into date windows.
+# GitHub launched in 2008; nothing predates this. Windowing starts here and
+# runs to "today" so no PR is missed at either end.
+SEARCH_EPOCH_START="2008-01-01"
+
+# --- portable UTC date helpers (macOS BSD date vs GNU date) ----------------
+# Detected once: BSD `date -j` takes -f/-v flags; GNU `date` takes -d/@epoch.
+if date -j -f "%Y-%m-%d %H:%M:%S" "2008-01-01 00:00:00" "+%s" >/dev/null 2>&1; then
+  DATE_BACKEND="bsd"
+elif date -u -d "2008-01-01 00:00:00 UTC" "+%s" >/dev/null 2>&1; then
+  DATE_BACKEND="gnu"
+else
+  echo "Error: neither BSD nor GNU 'date' epoch conversion works on this system." >&2
+  exit 3
+fi
+
+# date_to_epoch YYYY-MM-DD -> seconds since epoch at UTC midnight of that day.
+date_to_epoch() {
+  if [[ "${DATE_BACKEND}" == "bsd" ]]; then
+    date -u -j -f "%Y-%m-%d %H:%M:%S" "${1} 00:00:00" "+%s"
+  else
+    date -u -d "${1} 00:00:00 UTC" "+%s"
+  fi
+}
+
+# epoch_to_date SECONDS -> YYYY-MM-DD in UTC.
+epoch_to_date() {
+  if [[ "${DATE_BACKEND}" == "bsd" ]]; then
+    date -u -j -f "%s" "${1}" "+%Y-%m-%d"
+  else
+    date -u -d "@${1}" "+%Y-%m-%d"
+  fi
+}
+
+# Seconds in one day; used to step window boundaries so adjacent windows don't
+# overlap (GitHub's created: range is inclusive on both ends).
+SECS_PER_DAY=86400
+
+# minus_one_year YYYY-MM-DD -> the same calendar date one year earlier (UTC).
+# Calendar-correct (handles leap years), unlike subtracting a fixed 365 days.
+minus_one_year() {
+  if [[ "${DATE_BACKEND}" == "bsd" ]]; then
+    date -u -j -v-1y -f "%Y-%m-%d" "${1}" "+%Y-%m-%d"
+  else
+    date -u -d "${1} -1 year" "+%Y-%m-%d"
+  fi
+}
+
+# count_matches QUERY_STRING -> prints issueCount for QUERY_STRING.
+# One cheap issueCount-only query (no node payload, no paging) used to decide
+# whether a query needs date windowing at all. Rate-limit aware via a short
+# retry loop. On persistent failure prints 0 — the caller reads that as "count
+# unknown", which forces full windowing with NO early exit (the safe path:
+# walk every year to 2008 rather than risk stopping short of a total we never
+# learned).
+count_matches() {
+  local query="${1}"
+  local retries=0 resp count
+  # shellcheck disable=SC2016
+  local gql='query($q: String!) { search(query: $q, type: ISSUE) { issueCount } }'
+  while :; do
+    if resp=$(gh api graphql -f query="${gql}" -f q="${query}" 2>/dev/null) \
+       && count=$(jq -e -r '.data.search.issueCount' <<<"${resp}" 2>/dev/null); then
+      printf '%s' "${count}"
+      return 0
+    fi
+    if (( ++retries > MAX_RETRIES )); then
+      echo "Warning: could not get a result count; windowing the full range with no early exit." >&2
+      printf '%s' "0"
+      return 0
+    fi
+    sleep 5
+  done
+}
+
+# fetch_search QUERY_STRING [COUNT_FILE]
 # Pages a GraphQL `search(type: ISSUE)` over QUERY_STRING and prints a JSON array
-# of PR nodes (with diffstat, labels, files, commits). Rate-limit aware. Warns
-# (on stderr) if the result set hits GitHub's 1000-result search cap.
+# of PR nodes (with diffstat, labels, files, commits) to stdout. Rate-limit
+# aware. If COUNT_FILE is given, writes the matched issueCount to it so the
+# windowing caller can detect the 1000-result cap — fetch_search runs inside a
+# command-substitution subshell, so a global variable would not survive back to
+# the caller; a file is how the count crosses that boundary. fetch_search does
+# NOT itself flag the dataset incomplete.
 fetch_search() {
   local query="${1}"
+  local count_file="${2:-}"
   local cursor="null"
   local has_next="true"
   local all="[]"
@@ -185,15 +266,123 @@ fetch_search() {
     fi
   done
 
-  # GitHub caps search at 1000 results: a larger match set is silently truncated.
-  if (( issue_count >= SEARCH_RESULT_CAP )); then
-    local collected
-    collected=$(jq 'length' <<<"${all}")
-    echo "Warning: query matched ${issue_count} results but GitHub search caps at ${SEARCH_RESULT_CAP}; collected ${collected}. Dataset is INCOMPLETE — narrow the query (e.g. by date range)." >&2
-    INCOMPLETE_REASONS+=("search hit the ${SEARCH_RESULT_CAP}-result cap (matched ${issue_count}); narrow the query, e.g. by date range")
+  # Publish the matched count so fetch_windowed can decide whether this window
+  # hit the 1000-result cap and needs splitting. Cap handling lives there.
+  if [[ -n "${count_file}" ]]; then
+    printf '%s' "${issue_count}" > "${count_file}"
   fi
 
   echo "${all}"
+}
+
+# WINDOW_OUT / WINDOW_COUNT are set by fetch_one_window (it can't print its
+# result via $(...) without losing access to its own per-call retry state, and
+# it returns both a JSON array and a count). Treated as the function's outputs.
+WINDOW_OUT="[]"
+WINDOW_COUNT=0
+
+# fetch_one_window BASE_QUERY LO_EPOCH HI_EPOCH COUNT_FILE
+# Fetches BASE_QUERY restricted to created:[LO..HI], recursively bisecting any
+# sub-range that hits the 1000-result cap down to single days. Sets WINDOW_OUT
+# to the merged JSON node array and WINDOW_COUNT to how many nodes it collected.
+# A single day still over cap is unsplittable — flagged in INCOMPLETE_REASONS.
+fetch_one_window() {
+  local base_query="${1}" lo="${2}" hi="${3}" count_file="${4}"
+  local since until query nodes win_count
+  since=$(epoch_to_date "${lo}")
+  until=$(epoch_to_date "${hi}")
+  query="${base_query} created:${since}..${until}"
+
+  nodes=$(fetch_search "${query}" "${count_file}")
+  win_count=$(cat "${count_file}")
+
+  if (( win_count >= SEARCH_RESULT_CAP )); then
+    if (( hi - lo >= SECS_PER_DAY )); then
+      # Over cap and wider than a day: bisect at a day-aligned midpoint. The two
+      # halves cover disjoint days (upper starts the day after the split point).
+      local mid mid_day mid_day_epoch next_epoch
+      mid=$(( (lo + hi) / 2 ))
+      mid_day=$(epoch_to_date "${mid}")
+      mid_day_epoch=$(date_to_epoch "${mid_day}")
+      if (( mid_day_epoch <= lo )); then
+        mid_day_epoch=$(( lo + SECS_PER_DAY ))
+      fi
+      next_epoch=$(( mid_day_epoch + SECS_PER_DAY ))
+
+      local acc="[]" acc_count=0 merged
+      fetch_one_window "${base_query}" "${lo}" "${mid_day_epoch}" "${count_file}"
+      merged=$(jq -s '.[0] + .[1]' <(printf '%s' "${acc}") <(printf '%s' "${WINDOW_OUT}"))
+      acc="${merged}"; (( acc_count += WINDOW_COUNT )) || true
+      if (( next_epoch <= hi )); then
+        fetch_one_window "${base_query}" "${next_epoch}" "${hi}" "${count_file}"
+        merged=$(jq -s '.[0] + .[1]' <(printf '%s' "${acc}") <(printf '%s' "${WINDOW_OUT}"))
+        acc="${merged}"; (( acc_count += WINDOW_COUNT )) || true
+      fi
+      WINDOW_OUT="${acc}"; WINDOW_COUNT="${acc_count}"
+      return 0
+    fi
+    # Single day still over cap: unsplittable. Keep what we got, flag overflow.
+    echo "Warning: ${since} alone matched ${win_count} results (> ${SEARCH_RESULT_CAP} cap); that day's data is truncated." >&2
+    INCOMPLETE_REASONS+=("${since} matched ${win_count} results in a single day, exceeding the ${SEARCH_RESULT_CAP}-result cap; that day is truncated")
+  fi
+
+  WINDOW_OUT="${nodes}"
+  WINDOW_COUNT=$(jq 'length' <<<"${nodes}")
+}
+
+# fetch_windowed BASE_QUERY TOTAL
+# Fetches BASE_QUERY one year at a time, walking newest -> oldest from today,
+# and stops as soon as the collected node count reaches TOTAL (the issueCount
+# probed up front). Because CV-relevant work skews recent, this typically skips
+# the empty early years entirely. TOTAL == 0 means the count probe failed: no
+# early exit, walk the whole range to SEARCH_EPOCH_START. Any year that hits the
+# 1000-result cap is bisected down to days by fetch_one_window. Prints the
+# merged JSON node array; de-duplication happens later in write_dataset.
+fetch_windowed() {
+  local base_query="${1}" total="${2}"
+
+  # Count crosses the command-substitution subshell boundary via this file.
+  local count_file
+  count_file=$(mktemp "${TMPDIR:-/tmp}/fetch_prs_cnt.XXXXXX")
+  # shellcheck disable=SC2064
+  trap "rm -f '${count_file}'" RETURN
+
+  local floor_epoch hi_date hi_epoch lo_date lo_epoch
+  floor_epoch=$(date_to_epoch "${SEARCH_EPOCH_START}")
+
+  local out="[]" collected=0 merged
+  hi_date="${TODAY}"
+  hi_epoch=$(date_to_epoch "${hi_date}")
+
+  while (( hi_epoch >= floor_epoch )); do
+    # Lower bound = one year before this window's upper bound, plus a day so
+    # adjacent year windows don't overlap on the boundary date. Clamp to floor.
+    lo_date=$(minus_one_year "${hi_date}")
+    lo_epoch=$(date_to_epoch "${lo_date}")
+    lo_epoch=$(( lo_epoch + SECS_PER_DAY ))
+    if (( lo_epoch < floor_epoch )); then
+      lo_epoch="${floor_epoch}"
+    fi
+
+    fetch_one_window "${base_query}" "${lo_epoch}" "${hi_epoch}" "${count_file}"
+    merged=$(jq -s '.[0] + .[1]' <(printf '%s' "${out}") <(printf '%s' "${WINDOW_OUT}"))
+    out="${merged}"
+    (( collected += WINDOW_COUNT )) || true
+
+    # Early exit: year windows are disjoint, so collected == unique count. Once
+    # we've seen every matching PR there's no point walking back to 2008.
+    # Only when TOTAL is known (> 0): total==0 means the up-front count probe
+    # failed, so we can't trust an early stop and walk the full range instead.
+    if (( total > 0 && collected >= total )); then
+      break
+    fi
+
+    # Step the upper bound to the day before this window's lower bound.
+    hi_epoch=$(( lo_epoch - SECS_PER_DAY ))
+    hi_date=$(epoch_to_date "${hi_epoch}")
+  done
+
+  echo "${out}"
 }
 
 # write_dataset MODE OUTFILE QUERY...
@@ -205,12 +394,24 @@ write_dataset() {
   shift 2
   echo "Fetching mode=${mode} ..." >&2
 
-  # Reset per-dataset incompleteness tracking; fetch_search appends cap hits.
+  # Reset per-dataset incompleteness tracking; fetch_windowed appends overflow
+  # hits for any single day that exceeds the cap.
   INCOMPLETE_REASONS=()
 
-  local raw="[]" query page merged
+  local raw="[]" query page merged count
   for query in "$@"; do
-    page=$(fetch_search "${query}")
+    # Cheap probe first: only partition into date windows when the query exceeds
+    # GitHub's 1000-result cap. A single fetch_search is far faster otherwise.
+    # count==0 means the probe failed (count unknown) OR the query genuinely
+    # matches nothing — both are safe to window: a true-zero query just runs one
+    # empty year window and early-exits immediately.
+    count=$(count_matches "${query}")
+    if (( count == 0 || count >= SEARCH_RESULT_CAP )); then
+      echo "Query matched ${count} results; fetching by date windows (newest first)..." >&2
+      page=$(fetch_windowed "${query}" "${count}")
+    else
+      page=$(fetch_search "${query}")
+    fi
     if ! merged=$(jq -s '.[0] + .[1]' <(printf '%s' "${raw}") <(printf '%s' "${page}")); then
       echo "Error: failed to merge query results." >&2
       return 1
@@ -281,6 +482,10 @@ write_dataset() {
   count=$(jq '.pr_count' "${outfile}")
   echo "Wrote ${count} PRs -> ${outfile}" >&2
 }
+
+# Upper bound for date windowing. Captured once so every window in a run shares
+# the same "now" (avoids a window boundary shifting mid-run across midnight UTC).
+TODAY=$(date -u +%Y-%m-%d)
 
 OUTDIR="${OUT}/${ORG}/${AUTHOR}"
 mkdir -p "${OUTDIR}"
