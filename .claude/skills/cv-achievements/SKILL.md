@@ -1,13 +1,15 @@
 ---
 name: cv-achievements
-description: Use when turning a GitHub PR-activity JSON (produced by fetch-prs.sh) into CV achievement bullets for a job entry. Prints bullets for review only — does not fetch from GitHub and does not edit the CV.
+description: Use when turning GitHub PR-activity JSON (produced by fetch-prs.sh) into CV achievement bullets for a job entry. Given a directory it processes both authored and reviewed PRs in one pass, prints the bullets, and saves them to results.md beside the input. Does not fetch from GitHub and does not edit the CV itself.
 ---
 
 # CV Achievements
 
-Turn a PR-activity JSON file into a handful of CV achievement bullets (3–6 for
-most roles, up to 7 for a long multi-year tenure with many distinct themes,
-scaled to the role) for one job entry.
+Turn PR-activity JSON into a handful of CV achievement bullets (3–6 for most
+roles, up to 7 for a long multi-year tenure with many distinct themes, scaled to
+the role) for one job entry. Given a directory, this means the authored PRs plus
+one reviewed-voice collaboration bullet — one combined list, printed and saved to
+`results.md` beside the input.
 
 ## Input contract
 
@@ -25,11 +27,15 @@ The user supplies a path produced by `fetch-prs.sh` — either ONE JSON file or 
 This skill NEVER calls GitHub. If no path is supplied, ask for one and tell the
 user to run `.claude/skills/cv-achievements/fetch-prs.sh --author <user> --org <org>` first.
 
-**If the path is a directory** (or both files exist): default to
-`prs-authored.json` — ownership voice is the stronger CV claim. Note that
-`prs-reviewed.json` is also present and offer to process it afterward. Never
-silently merge the two into one bullet set; each is its own `mode` run (see the
-mode-reconciliation note in Step 3).
+**If the path is a directory** (or both files exist): process **both** files in
+one pass. `prs-authored.json` is the spine — ownership voice is the stronger CV
+claim, so it produces the bulk of the bullets. `prs-reviewed.json` then
+contributes **exactly one** distinct collaboration/gatekeeping bullet appended to
+the same list (see the reconciliation note in Step 3). Analyze each file in its
+own `mode` (Step 1) — never blend their themes into one bullet — but deliver a
+single combined list, not two separate sets the user has to stitch together.
+
+If only one file is present, process that one and skip the other voice.
 
 When `incomplete` is `true`, read `incomplete_reasons` and calibrate the warning
 to the reason — do not blanket-warn (see the table below). Always print the
@@ -181,16 +187,29 @@ data cannot show. If a cluster's impact is unclear, describe the work plainly.
 
 **Reconciling `authored` and `reviewed`.** When both modes exist for the same
 author, their themes usually *mirror* — the person who builds a subsystem also
-reviews changes to it. Keep the sets separate and pick **one framing per CV
-entry**: ownership (`authored`) reads stronger and is the default. Only pull a
-reviewed bullet in to make a distinct collaboration/mentorship/gatekeeping point
-(e.g. "core reviewer for the platform"), and never claim the same accomplishment
-twice across the two voices — that double-counts one body of work.
+reviews changes to it. So the authored bullets carry the work, and the reviewed
+file contributes **one** bullet only: the distinct
+collaboration/mentorship/gatekeeping point that ownership voice can't make on its
+own (e.g. "core reviewer for the platform — vetted ~N pull requests across the X
+and Y codebases to uphold quality standards"). Ground it in what the reviewed data
+*supports*: review volume (`pr_count`) and repo/path breadth are solid; do not
+claim "reviewed N distinct contributors" unless the data carries a per-PR author
+field (it often doesn't — say so if asked). Never restate an authored
+accomplishment in reviewed voice; that double-counts one body of work. If the
+reviewed themes add no point beyond what authored already says, it's fine to skip
+the bullet rather than force a weak one.
 
-## Step 4 — Output only
+## Step 4 — Print and save
 
 1. Print the candidate bullets, grouped under the target job entry (ask the user
-   which job if ambiguous).
-2. Stop. This skill does NOT edit `index.md` and does NOT call any other skill.
-   If the user wants the bullets inserted into the CV, that is a separate,
-   explicit step they take afterward.
+   which job if ambiguous), so they can review them in the conversation.
+2. Save the same combined list to a **timestamped `results-<stamp>.md` inside the
+   input directory**, where `<stamp>` comes from `date +%Y-%m-%d-%H%M` run in the
+   shell (e.g. `.cv-data/<org>/<author>/results-2026-06-06-1825.md`). The
+   timestamp keeps each run as its own file rather than clobbering the last —
+   handy for comparing successive passes. Save beside the source data, out of the
+   site itself. Use a top heading naming the job entry, then the `-` bullets —
+   authored bullets first, the single reviewed bullet last.
+3. Stop there. This skill does NOT touch `index.md` and does NOT call any other
+   skill. Inserting bullets into the actual CV is a separate, explicit step the
+   user takes afterward (the `update-cv` skill, by hand, etc.).
