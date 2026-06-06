@@ -57,6 +57,14 @@ fi
 MAX_RETRIES=5
 # GitHub's search API hard-caps any query at 1000 returned results.
 SEARCH_RESULT_CAP=1000
+# Per-PR sub-connection page sizes (see the `files`/`commits` fields in $gql).
+# A PR returning exactly this many is assumed truncated — the script does not
+# page sub-connections, so larger PRs lose files/commits beyond these limits.
+FILES_PAGE=100
+COMMITS_PAGE=100
+# Accumulates human-readable reasons a dataset is incomplete; reset per dataset
+# in write_dataset, appended by fetch_search, stamped into the JSON wrapper.
+INCOMPLETE_REASONS=()
 
 # fetch_search QUERY_STRING
 # Pages a GraphQL `search(type: ISSUE)` over QUERY_STRING and prints a JSON array
@@ -99,8 +107,14 @@ fetch_search() {
 
   while [[ "${has_next}" == "true" ]]; do
     local resp
+    # First page: pass no `after` so GraphQL sees null. Passing -F after="null"
+    # sends the *string* "null", which is an invalid cursor, not GraphQL null.
+    local -a after_arg=()
+    if [[ "${cursor}" != "null" ]]; then
+      after_arg=(-F "after=${cursor}")
+    fi
     if ! resp=$(gh api graphql -f query="${gql}" -f q="${query}" \
-                  -F after="${cursor}" 2>"${errfile}"); then
+                  "${after_arg[@]}" 2>"${errfile}"); then
       if grep -qiE 'rate limit|secondary' "${errfile}"; then
         if (( ++retries > MAX_RETRIES )); then
           echo "Error: gave up after ${MAX_RETRIES} rate-limit retries; try again later." >&2
@@ -136,8 +150,15 @@ fetch_search() {
         sleep 60
         continue
       fi
+      # GraphQL can return `errors` alongside usable `data` (a partial success:
+      # e.g. one sub-field hit a node cap). Only abort when there is no usable
+      # search payload; otherwise warn and keep the data we got.
+      if jq -e '.data.search == null' <<<"${resp}" >/dev/null 2>&1; then
+        jq -r '.errors[].message' <<<"${resp}" >&2
+        return 1
+      fi
+      echo "Warning: GraphQL returned partial errors; continuing with available data:" >&2
       jq -r '.errors[].message' <<<"${resp}" >&2
-      return 1
     fi
 
     # A 200 body with no `errors` can still lack `.data.search` (malformed/partial).
@@ -169,6 +190,7 @@ fetch_search() {
     local collected
     collected=$(jq 'length' <<<"${all}")
     echo "Warning: query matched ${issue_count} results but GitHub search caps at ${SEARCH_RESULT_CAP}; collected ${collected}. Dataset is INCOMPLETE — narrow the query (e.g. by date range)." >&2
+    INCOMPLETE_REASONS+=("search hit the ${SEARCH_RESULT_CAP}-result cap (matched ${issue_count}); narrow the query, e.g. by date range")
   fi
 
   echo "${all}"
@@ -182,6 +204,9 @@ write_dataset() {
   local mode="${1}" outfile="${2}"
   shift 2
   echo "Fetching mode=${mode} ..." >&2
+
+  # Reset per-dataset incompleteness tracking; fetch_search appends cap hits.
+  INCOMPLETE_REASONS=()
 
   local raw="[]" query page merged
   for query in "$@"; do
@@ -212,8 +237,32 @@ write_dataset() {
     return 1
   fi
 
+  # Sub-connection truncation: a PR with exactly FILES_PAGE files (or
+  # COMMITS_PAGE commits) almost certainly had more that were dropped, since the
+  # script does not page these connections. Flag it so the analyzing skill knows
+  # those PRs' file/commit lists are partial.
+  local files_trunc commits_trunc
+  files_trunc=$(jq --argjson cap "${FILES_PAGE}" '[ .[] | select((.files | length) >= $cap) ] | length' <<<"${normalized}")
+  commits_trunc=$(jq --argjson cap "${COMMITS_PAGE}" '[ .[] | select((.commits | length) >= $cap) ] | length' <<<"${normalized}")
+  if (( files_trunc > 0 )); then
+    echo "Warning: ${files_trunc} PR(s) hit the ${FILES_PAGE}-file cap; their file lists are truncated." >&2
+    INCOMPLETE_REASONS+=("${files_trunc} PR(s) had their file list truncated at ${FILES_PAGE} files")
+  fi
+  if (( commits_trunc > 0 )); then
+    echo "Warning: ${commits_trunc} PR(s) hit the ${COMMITS_PAGE}-commit cap; their commit lists are truncated." >&2
+    INCOMPLETE_REASONS+=("${commits_trunc} PR(s) had their commit list truncated at ${COMMITS_PAGE} commits")
+  fi
+
   local generated_at
   generated_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+  # Build the incomplete_reasons JSON array from the accumulated reasons.
+  local reasons_json
+  if (( ${#INCOMPLETE_REASONS[@]} > 0 )); then
+    reasons_json=$(printf '%s\n' "${INCOMPLETE_REASONS[@]}" | jq -R . | jq -s .)
+  else
+    reasons_json="[]"
+  fi
 
   # Stream $normalized via stdin rather than --argjson: a large PR set blows past
   # ARG_MAX as a command-line argument ("Argument list too long").
@@ -222,7 +271,10 @@ write_dataset() {
     --arg mode "${mode}" \
     --arg author "${AUTHOR}" \
     --arg org "${ORG}" \
+    --argjson incomplete_reasons "${reasons_json}" \
     '{generated_at: $generated_at, mode: $mode, author: $author, org: $org,
+      incomplete: ($incomplete_reasons | length > 0),
+      incomplete_reasons: $incomplete_reasons,
       pr_count: (. | length), prs: .}' > "${outfile}"
 
   local count
@@ -238,12 +290,12 @@ run_authored() {
     "is:pr author:${AUTHOR} org:${ORG}"
 }
 run_reviewed() {
-  # GitHub PR search has no parenthesized OR grouping, so the union of
-  # "author's merged PRs" and "PRs they reviewed" is two separate searches,
-  # merged and de-duplicated by write_dataset.
+  # "reviewed" = PRs the author participated in as a reviewer, NOT their own
+  # work. Excluding `-author:${AUTHOR}` keeps this dataset disjoint from
+  # prs-authored.json (otherwise self-authored PRs land in both files and get
+  # double-counted across the "led" and "participated" narratives).
   write_dataset "reviewed" "${OUTDIR}/prs-reviewed.json" \
-    "is:pr org:${ORG} author:${AUTHOR} is:merged" \
-    "is:pr org:${ORG} reviewed-by:${AUTHOR}"
+    "is:pr org:${ORG} reviewed-by:${AUTHOR} -author:${AUTHOR}"
 }
 
 case "${MODE}" in

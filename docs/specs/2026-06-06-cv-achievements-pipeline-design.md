@@ -16,13 +16,13 @@ Two fully decoupled pieces sharing only a JSON file contract:
 ┌─────────────────────────┐         ┌───────────────────────────┐
 │  fetch-prs.sh (manual)  │  JSON   │  SKILL.md (cv-achievements) │
 │  fetch → throttle → save│ ──────► │  read JSON → analyze →      │
-│  knows nothing of skill │  file   │  bullets → update-cv        │
+│  knows nothing of skill │  file   │  print bullets (review)     │
 └─────────────────────────┘         └───────────────────────────┘
 ```
 
 - **Script** does *all* mechanical work: fetch, paginate, throttle, save. Run manually by the user.
-- **Skill** does *all* analysis: read a supplied JSON, produce bullets, hand off to `update-cv`.
-- Neither invokes the other. The script never analyzes; the skill never calls GitHub.
+- **Skill** does *all* analysis: read a supplied JSON, produce bullets, and **print them for review** — nothing more.
+- Neither invokes the other. The script never analyzes; the skill never calls GitHub and never edits the CV. Inserting bullets into `index.md` is a separate, explicit step the user takes afterward.
 
 ## Strict Labor Split
 
@@ -30,8 +30,8 @@ Two fully decoupled pieces sharing only a JSON file contract:
 |---|---|
 | GitHub API calls, paging, rate-limit handling | `fetch-prs.sh` only |
 | Choosing what data to keep (fields) | `fetch-prs.sh` only |
-| Reading JSON, judging significance, wording bullets | skill / agent only |
-| Editing `index.md` | existing `update-cv` skill only |
+| Reading JSON, judging significance, wording bullets, printing them | skill / agent only |
+| Editing `index.md` | the user, as a separate explicit step (out of this pipeline) |
 
 ## Component 1 — `fetch-prs.sh`
 
@@ -55,7 +55,9 @@ Two fully decoupled pieces sharing only a JSON file contract:
 | *(no `--mode`)* | both files | runs both fetches sequentially |
 
 - `authored-all` = all PRs authored by `--author`, **any state** (open, closed, merged).
-- `reviewed` = merged PRs authored by `--author` **plus** PRs reviewed by `--author` (team participation signal).
+- `reviewed` = PRs authored by **others** that `--author` reviewed (`reviewed-by:X -author:X`). The author's own PRs are excluded so the two datasets stay disjoint — a self-authored PR can't be double-counted across the "led" and "participated" narratives.
+
+**Scope (intentional):** GitHub only. The target org's infrastructure-as-code work lives entirely in GitHub PRs, so the PR record is the complete work history for it. No GitLab/Bitbucket/other-VCS fetch — out of scope by design, not an oversight.
 
 **Per-PR fields extracted:**
 `number, title, body, url, state, repository, createdAt, mergedAt/closedAt, labels, additions, deletions, changedFiles, files[{name, additions, deletions}], commits[{message}]`
@@ -70,12 +72,14 @@ Two fully decoupled pieces sharing only a JSON file contract:
   "mode": "authored-all | reviewed",
   "author": "<--author value>",
   "org": "<--org value>",
+  "incomplete": false,
+  "incomplete_reasons": [],
   "pr_count": 0,
   "prs": [ { /* fields above */ } ]
 }
 ```
 
-The `mode` field is the contract the skill reads to choose its voice. `author`/`org` are stamped from the arguments for provenance.
+The `mode` field is the contract the skill reads to choose its voice. `author`/`org` are stamped from the arguments for provenance. `incomplete`/`incomplete_reasons` flag a partial dataset (search hit GitHub's 1000-result cap, or some PRs exceeded the 100-file/100-commit sub-connection limit) so the skill can warn the user instead of presenting a truncated set as complete.
 
 ### Rate-limit handling (verified necessary)
 
@@ -95,13 +99,12 @@ During design, GitHub's **secondary rate limit** was tripped with only a handful
    - `authored-all` → ownership verbs: *Designed, Led, Built, Architected, Migrated, Automated*.
    - `reviewed` → contribution verbs: *Contributed to, Participated in, Supported, Helped deliver*.
 2. Analyze `prs[]`: cluster by repository / labels / recurring themes; weight by change size and recency; discard noise (dependency bumps, typo fixes, reverts, trivial config).
-3. Produce **5–6** candidate bullets (a sensible cap for a top role; the user can request fewer for shorter tenures).
+3. Produce **3–6** candidate bullets, scaled to tenure and signal (5–6 for a multi-year top role; fewer for short stints or thin data). Don't pad to a count.
 4. Style-match the target job's section in `index.md`: `-` bullets, action-verb-led, past tense, impact-oriented, no PR numbers/links in the bullet text.
 
-**Output / handoff:**
-- Print the candidate bullets for review.
-- User edits/approves.
-- On approval, invoke the existing `update-cv` skill to insert them under the relevant job entry (branch → edit `index.md` → commit → PR). This skill does **not** edit `index.md` itself.
+**Output (review only):**
+- Print the candidate bullets, grouped under the target job entry, then stop.
+- The skill does **not** edit `index.md` and does **not** invoke any other skill. Inserting the bullets into the CV is a separate, explicit step the user takes afterward.
 
 ## Files
 
@@ -119,7 +122,8 @@ Data files live in a gitignored directory **inside the repo**: `.cv-data/`. Adde
 - Per-PR AI enrichment / any second model.
 - Full diff/patch extraction.
 - The skill auto-running the fetch script.
-- Auto-inserting bullets into `index.md` without a human review gate.
+- The skill editing `index.md` at all — it only prints bullets; insertion is a separate user step.
+- Non-GitHub sources (GitLab, Bitbucket): the target org's work is entirely in GitHub.
 - Hardcoding any author, org, or job — all are parameters/inputs.
 
 ## Verification Criteria
@@ -127,6 +131,7 @@ Data files live in a gitignored directory **inside the repo**: `.cv-data/`. Adde
 - `./fetch-prs.sh --author <user> --org <org> --mode authored-all` writes a valid `prs-authored.json` with a populated `prs[]` and correct `mode`/`author`/`org`/`pr_count`.
 - `./fetch-prs.sh --author <user> --org <org>` with no `--mode` writes **both** JSON files.
 - Missing `--author` or `--org` exits with a clear usage error.
-- A full fetch of several hundred PRs completes **without** an unhandled `403` secondary-limit abort.
-- The skill, given a `prs-authored.json`, emits ownership-voice bullets in `index.md` style and stops for review before any edit.
+- A full fetch of several hundred PRs completes **without** an unhandled `403` secondary-limit abort. *(Verified live against `Axonius`/`langburd`: 589 authored PRs and the reviewed dataset fetched cleanly.)*
+- The skill, given a `prs-authored.json`, emits ownership-voice bullets in `index.md` style and **only prints them for review** — it never edits `index.md` and never invokes another skill.
+- A dataset that hits the 1000-result cap or truncates a PR's files/commits is stamped `"incomplete": true` with reasons.
 - `.cv-data/` is gitignored; no data file is tracked by git.

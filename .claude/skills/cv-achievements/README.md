@@ -8,7 +8,7 @@ activity. Reusable for any GitHub user, any org, and any job.
 | File | Role |
 |---|---|
 | `fetch-prs.sh` | Fetches PR activity into JSON. Run it yourself. |
-| `SKILL.md` | Claude skill: reads the JSON, writes bullets, hands off to `update-cv`. |
+| `SKILL.md` | Claude skill: reads the JSON and prints candidate bullets for review. |
 
 The script does all GitHub I/O. The skill does all analysis. They share only the
 JSON file — neither calls the other.
@@ -35,13 +35,20 @@ JSON file — neither calls the other.
 Output (gitignored, never committed) — files are scoped per org and author under `<out>/<org>/<author>/`:
 
 - `.cv-data/<org>/<author>/prs-authored.json` — PRs you opened (any state) → "led / built" voice.
-- `.cv-data/<org>/<author>/prs-reviewed.json` — your merged PRs + PRs you reviewed → "participated" voice.
+- `.cv-data/<org>/<author>/prs-reviewed.json` — PRs by *others* that you reviewed (your own PRs are excluded, so the two files don't overlap) → "participated" voice.
 
 Hundreds of PRs are fine — the script pages via GraphQL and sleeps/retries on
 rate limits (up to 5 attempts before giving up). A large fetch may take a few
-minutes. GitHub's search API caps any query at 1000 results; if a dataset hits
-that ceiling the script prints a `Warning: ... INCOMPLETE` line on stderr —
-narrow the query (e.g. by date range) if you see it.
+minutes.
+
+If a dataset is partial, the script prints a `Warning:` line on stderr **and**
+stamps `"incomplete": true` plus `"incomplete_reasons": [...]` into the JSON, so
+the skill can flag it too. Causes:
+
+- GitHub's search API caps any query at 1000 results — narrow it (e.g. by date
+  range) if you hit the cap.
+- A PR with more than 100 files or 100 commits has its file/commit list
+  truncated (sub-connections are not paged).
 
 ### Examples
 
@@ -60,12 +67,14 @@ Ask Claude to use the `cv-achievements` skill and point it at one JSON file, e.g
 > Use the cv-achievements skill on `.cv-data/acme/octocat/prs-authored.json`.
 
 The skill reads the `mode` field to pick the voice, analyzes the PRs, and prints
-5–6 candidate bullets. It does **not** edit your CV yet.
+candidate bullets (3–6, scaled to the role). It does **not** edit your CV — it
+only prints bullets for review.
 
-## Step 3 — Insert into the CV
+## Step 3 — Insert into the CV (manual)
 
-Review/edit the bullets. On your approval, the skill invokes the `update-cv`
-skill to add them under the chosen job entry in `index.md` (branch → commit → PR).
+Review/edit the printed bullets, then add the ones you want under the relevant
+job entry in `index.md` yourself (or ask Claude to, as a separate explicit step).
+This pipeline stops at "here are the candidate bullets."
 
 ## Notes
 
