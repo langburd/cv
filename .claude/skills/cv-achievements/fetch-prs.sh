@@ -93,6 +93,48 @@ fetch_search() {
   echo "$all"
 }
 
+# write_dataset MODE QUERY OUTFILE
+# Fetches, normalizes to the flat per-PR schema, and writes the wrapped JSON.
+write_dataset() {
+  local mode="$1" query="$2" outfile="$3"
+  echo "Fetching mode=$mode ..." >&2
+
+  local raw normalized
+  raw=$(fetch_search "$query")
+
+  normalized=$(jq '[ .[] | {
+    number, title, body, url, state,
+    repository: .repository.nameWithOwner,
+    createdAt, mergedAt, closedAt,
+    labels: [ .labels.nodes[].name ],
+    additions, deletions, changedFiles,
+    files:   [ .files.nodes[]   | {name: .path, additions, deletions} ],
+    commits: [ .commits.nodes[] | {message: .commit.message} ]
+  } ]' <<<"$raw")
+
+  jq -n \
+    --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    --arg mode "$mode" \
+    --arg author "$AUTHOR" \
+    --arg org "$ORG" \
+    --argjson prs "$normalized" \
+    '{generated_at: $generated_at, mode: $mode, author: $author, org: $org,
+      pr_count: ($prs | length), prs: $prs}' > "$outfile"
+
+  echo "Wrote $(jq '.pr_count' "$outfile") PRs -> $outfile" >&2
+}
+
 mkdir -p "$OUT"
-# TEMP smoke driver — remove in Task 4
-fetch_search "is:pr author:$AUTHOR org:$ORG" | jq 'length'
+
+run_authored() {
+  write_dataset "authored-all" "is:pr author:$AUTHOR org:$ORG" "$OUT/prs-authored.json"
+}
+run_reviewed() {
+  write_dataset "reviewed" "is:pr org:$ORG ( author:$AUTHOR is:merged OR reviewed-by:$AUTHOR )" "$OUT/prs-reviewed.json"
+}
+
+case "$MODE" in
+  authored-all) run_authored ;;
+  reviewed)     run_reviewed ;;
+  "")           run_authored; run_reviewed ;;
+esac
