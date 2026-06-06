@@ -10,11 +10,12 @@ Usage: fetch-prs.sh --author <user> --org <org> [--mode authored-all|reviewed] [
   --author <user>   GitHub username to fetch PRs for (required)
   --org <org>       GitHub org/owner to scope the search to (required)
   --mode <mode>     authored-all | reviewed. Omit to produce BOTH datasets.
-  --out <dir>       Output directory (default: .cv-data)
+  --out <dir>       Output base directory (default: .cv-data); files are written
+                    under <out>/<org>/
 
 Produces:
-  authored-all -> <out>/prs-authored.json   (any-state PRs the author opened)
-  reviewed     -> <out>/prs-reviewed.json    (author's merged PRs + PRs they reviewed)
+  authored-all -> <out>/<org>/prs-authored.json   (any-state PRs the author opened)
+  reviewed     -> <out>/<org>/prs-reviewed.json    (author's merged PRs + PRs they reviewed)
 USAGE
 }
 
@@ -124,13 +125,14 @@ write_dataset() {
   echo "Wrote $(jq '.pr_count' "$outfile") PRs -> $outfile" >&2
 }
 
-mkdir -p "$OUT"
+OUTDIR="$OUT/$ORG"
+mkdir -p "$OUTDIR"
 
 run_authored() {
-  write_dataset "authored-all" "is:pr author:$AUTHOR org:$ORG" "$OUT/prs-authored.json"
+  write_dataset "authored-all" "is:pr author:$AUTHOR org:$ORG" "$OUTDIR/prs-authored.json"
 }
 run_reviewed() {
-  write_dataset "reviewed" "is:pr org:$ORG ( author:$AUTHOR is:merged OR reviewed-by:$AUTHOR )" "$OUT/prs-reviewed.json"
+  write_dataset "reviewed" "is:pr org:$ORG ( author:$AUTHOR is:merged OR reviewed-by:$AUTHOR )" "$OUTDIR/prs-reviewed.json"
 }
 
 case "$MODE" in
