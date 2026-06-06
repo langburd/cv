@@ -5,8 +5,9 @@ description: Use when turning a GitHub PR-activity JSON (produced by fetch-prs.s
 
 # CV Achievements
 
-Turn a PR-activity JSON file into a handful of CV achievement bullets (3–6, scaled
-to the role) for one job entry.
+Turn a PR-activity JSON file into a handful of CV achievement bullets (3–6 for
+most roles, up to 7 for a long multi-year tenure with many distinct themes,
+scaled to the role) for one job entry.
 
 ## Input contract
 
@@ -132,9 +133,12 @@ data cannot show. If a cluster's impact is unclear, describe the work plainly.
 
 ## Step 3 — Produce bullets
 
-- Aim for 3–6 bullets, scaled to tenure and signal: a multi-year top role can
-  carry 5–6; a short stint or thin dataset should get fewer (2–3). Do not pad to
-  hit a count.
+- Aim for 3–6 bullets, scaled to tenure and signal. A short stint or thin
+  dataset should get fewer (2–3); a multi-year role carries 5–6. A long tenure
+  (5+ years) with many genuinely distinct themes can run to 7 — but only when
+  each extra bullet is its own real accomplishment, not padding. The rule is
+  one-bullet-per-theme, not a target count: if merging two thin themes reads
+  stronger, merge them; never split one accomplishment to hit a number.
 - Match the existing `index.md` job-entry style: `-` bullets, action-verb first, past tense, impact-oriented.
 - No PR numbers, no URLs, no repo names in the bullet text.
 - Each bullet = one distinct theme. Merge overlapping clusters.
