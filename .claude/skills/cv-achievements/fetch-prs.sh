@@ -21,12 +21,20 @@ USAGE
 
 AUTHOR="" ORG="" MODE="" OUT=".cv-data"
 
+# require_value FLAG VALUE — error out if VALUE is missing or looks like a flag
+require_value() {
+  if [[ -z "$2" || "$2" == -* ]]; then
+    echo "Error: $1 requires a value." >&2
+    usage; exit 2
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --author) AUTHOR="${2:-}"; shift 2 ;;
-    --org)    ORG="${2:-}"; shift 2 ;;
-    --mode)   MODE="${2:-}"; shift 2 ;;
-    --out)    OUT="${2:-}"; shift 2 ;;
+    --author) require_value "$1" "${2:-}"; AUTHOR="$2"; shift 2 ;;
+    --org)    require_value "$1" "${2:-}"; ORG="$2"; shift 2 ;;
+    --mode)   require_value "$1" "${2:-}"; MODE="$2"; shift 2 ;;
+    --out)    require_value "$1" "${2:-}"; OUT="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage; exit 2 ;;
   esac
