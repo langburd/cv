@@ -11,8 +11,9 @@ scaled to the role) for one job entry.
 
 ## Input contract
 
-The user supplies a path to ONE JSON file produced by `fetch-prs.sh` (written to
-`<out>/<org>/<author>/prs-authored.json` or `<out>/<org>/<author>/prs-reviewed.json`). Its shape:
+The user supplies a path produced by `fetch-prs.sh` — either ONE JSON file or the
+`<out>/<org>/<author>/` **directory** that holds `prs-authored.json` and/or
+`prs-reviewed.json`. Its shape:
 
 ```json
 { "generated_at": "...", "mode": "authored-all|reviewed",
@@ -21,13 +22,23 @@ The user supplies a path to ONE JSON file produced by `fetch-prs.sh` (written to
   "pr_count": 0, "prs": [ ... ] }
 ```
 
-This skill NEVER calls GitHub. If no JSON path is supplied, ask for one and tell the
+This skill NEVER calls GitHub. If no path is supplied, ask for one and tell the
 user to run `.claude/skills/cv-achievements/fetch-prs.sh --author <user> --org <org>` first.
 
-If `incomplete` is `true`, tell the user up front that the dataset is partial
-(print `incomplete_reasons`), so they can re-fetch a narrower query before
-trusting the bullets. Do not present bullets from an incomplete dataset as a
-full account of the work.
+**If the path is a directory** (or both files exist): default to
+`prs-authored.json` — ownership voice is the stronger CV claim. Note that
+`prs-reviewed.json` is also present and offer to process it afterward. Never
+silently merge the two into one bullet set; each is its own `mode` run (see the
+mode-reconciliation note in Step 3).
+
+When `incomplete` is `true`, read `incomplete_reasons` and calibrate the warning
+to the reason — do not blanket-warn (see the table below). Always print the
+reasons so the user can judge.
+
+| Reason pattern | Impact on bullets | What to tell the user |
+|---|---|---|
+| `file list truncated at 100 files` / `commit list truncated` | **Low** — `pr_count`, titles, labels intact; theme detection unaffected. Only the few huge PRs understate breadth. | One line: those N PRs are large; breadth is slightly undercounted. Proceed. |
+| result cap / search-window / query truncation (whole PRs missing) | **High** — the dataset is genuinely partial. | Tell the user up front, suggest a narrower re-fetch before trusting counts; don't present bullets as a full account. |
 
 ## Step 1 — Read mode, pick voice
 
@@ -78,11 +89,16 @@ Two judgment calls the extensions alone won't make:
   `adapters/`, `plugins/`) directory, especially with build/manifest files, is a
   *shipped service* — a stronger CV claim than a one-off script in `scripts/`. The
   path tells you which; name it accordingly ("built a service" vs "wrote tooling").
-- **Real frontend vs. bulk file moves.** A surge of `.vue`/`.tsx`/`.scss` in a
-  *single* PR is usually a rename, vendoring, or generated bundle — not authorship.
-  Only claim frontend skill when real frontend files are *authored across several
-  PRs*. Confirm with the per-PR count (the `any()` pattern below), not the raw file
-  tally — one 30-file rename inflates a bare extension count into a fake "major effort."
+- **Authored vs. generated/synth output.** Not every file in a PR was hand-written.
+  Generated and vendored files inflate counts without proving skill: CDKTF emits
+  `cdktf.out/*.json` (and `*.tf.json`) from a small `.ts` change; lockfiles
+  (`*.lock.hcl`, `package-lock.json`, `go.sum`), a `terraform fmt` sweep, or a
+  bulk `.vue`/`.tsx`/`.scss` rename all balloon file/line totals. Weigh the
+  *authored source* — count the `.ts`/`.go`/`.py`/`.tf` a human wrote, not the
+  emitted artifacts. A surge of generated or moved files in a *single* PR is the
+  tell; confirm a real skill with the per-PR count of authored files across
+  *several* PRs (the `any()` pattern below), not the raw file tally — one 30-file
+  rename or a 500-file synth dump becomes a fake "major effort" otherwise.
 
 ### 2b — Cluster the work
 
@@ -103,6 +119,22 @@ When counting how many PRs fall in a cluster with `jq`, match at the PR level wi
 `any(...)`, not a bare `.files[]` predicate — the latter iterates files and counts a
 PR once *per matching file*, badly inflating large clusters. Use:
 `[ .prs[] | select(any(.files[]?.name; test("^deployments/cloudflare"))) ] | length`
+
+Starter recon block — run these first to surface clusters before reading titles
+(`$F` = the JSON path):
+
+```bash
+# repos and tenure window
+jq -r '[.prs[].repository]|group_by(.)|map({r:.[0],n:length})|sort_by(-.n)|.[][]' "$F"
+jq -r '[.prs[].mergedAt // .prs[].createdAt]|min,max' "$F"
+# PR-level histogram of top-level path prefixes (NOT file-level — see any() above)
+jq -r '[.prs[]|[.files[]?.name|split("/")[0]]|unique[]]|group_by(.)|map({p:.[0],n:length})|sort_by(-.n)|.[][]' "$F"
+# count PRs matching one cluster regex
+jq -r '[.prs[]|select(any(.files[]?.name; test("REGEX")))]|length' "$F"
+```
+
+Note the inner `unique` in the histogram — it dedups paths *within* a PR so each
+PR contributes at most once per prefix (a file-level `split` would re-inflate).
 
 ### 2c — Weight clusters (what's CV-worthy)
 
@@ -146,6 +178,14 @@ data cannot show. If a cluster's impact is unclear, describe the work plainly.
 - Ground every claim in the data. State only impact you can support from
   titles, labels, files, commit messages, and diffstat. If a cluster's impact is
   unclear, describe the work plainly rather than inventing an outcome.
+
+**Reconciling `authored` and `reviewed`.** When both modes exist for the same
+author, their themes usually *mirror* — the person who builds a subsystem also
+reviews changes to it. Keep the sets separate and pick **one framing per CV
+entry**: ownership (`authored`) reads stronger and is the default. Only pull a
+reviewed bullet in to make a distinct collaboration/mentorship/gatekeeping point
+(e.g. "core reviewer for the platform"), and never claim the same accomplishment
+twice across the two voices — that double-counts one body of work.
 
 ## Step 4 — Output only
 
