@@ -108,7 +108,8 @@ During design, GitHub's **secondary rate limit** was tripped with only a handful
 ```
 .claude/skills/cv-achievements/
 ├── SKILL.md
-└── fetch-prs.sh
+├── fetch-prs.sh
+└── README.md   # human-facing usage docs for the script + skill
 ```
 
 Data files live in a gitignored directory **inside the repo**: `.cv-data/`. Added to `.gitignore`. Never committed, never served by GitHub Pages.

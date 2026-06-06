@@ -15,12 +15,14 @@
 ```
 .claude/skills/cv-achievements/
 ├── SKILL.md          # analysis contract: JSON in → bullets out → update-cv handoff
-└── fetch-prs.sh      # mechanical fetch: gh graphql → throttle → .cv-data/*.json
+├── fetch-prs.sh      # mechanical fetch: gh graphql → throttle → .cv-data/*.json
+└── README.md         # human-facing usage docs for the script + skill
 .gitignore            # add .cv-data/
 ```
 
 - `fetch-prs.sh` — single responsibility: arg parsing + GraphQL fetch + rate-limit retry + JSON write. No analysis.
 - `SKILL.md` — single responsibility: read JSON, judge significance, word bullets, hand off. No fetching.
+- `README.md` — single responsibility: tell a human how to run the script and invoke the skill end to end.
 - `.cv-data/` — gitignored runtime output. Never committed, never served.
 
 ---
@@ -434,7 +436,110 @@ git commit -m "feat: add cv-achievements skill for PR-to-bullet analysis"
 
 ---
 
-## Task 6: End-to-end dry run
+## Task 6: Write the README.md usage docs
+
+**Files:**
+- Create: `.claude/skills/cv-achievements/README.md`
+
+Human-facing instructions: prerequisites, how to run the script, how to invoke the skill, and the full flow. Documentation only — no code paths to test beyond confirming the commands shown match what the script actually accepts.
+
+- [ ] **Step 1: Write README.md**
+
+Create `.claude/skills/cv-achievements/README.md`:
+
+````markdown
+# cv-achievements
+
+Generate CV achievement bullets for a job entry from your real GitHub PR
+activity. Reusable for any GitHub user, any org, and any job.
+
+## Pieces
+
+| File | Role |
+|---|---|
+| `fetch-prs.sh` | Fetches PR activity into JSON. Run it yourself. |
+| `SKILL.md` | Claude skill: reads the JSON, writes bullets, hands off to `update-cv`. |
+
+The script does all GitHub I/O. The skill does all analysis. They share only the
+JSON file — neither calls the other.
+
+## Prerequisites
+
+- [`gh`](https://cli.github.com/) installed and authenticated: `gh auth status`.
+  Your token needs `repo` read scope for the target org.
+- [`jq`](https://jqlang.github.io/jq/) installed.
+
+## Step 1 — Fetch your PRs
+
+```bash
+.claude/skills/cv-achievements/fetch-prs.sh --author <github-user> --org <org>
+```
+
+| Flag | Required | Default | Meaning |
+|---|---|---|---|
+| `--author` | yes | — | GitHub username to fetch PRs for |
+| `--org` | yes | — | GitHub org/owner to scope to |
+| `--mode` | no | both | `authored-all` or `reviewed`; omit for both |
+| `--out` | no | `.cv-data` | output directory |
+
+Output (gitignored, never committed):
+
+- `.cv-data/prs-authored.json` — PRs you opened (any state) → "led / built" voice.
+- `.cv-data/prs-reviewed.json` — your merged PRs + PRs you reviewed → "participated" voice.
+
+Hundreds of PRs are fine — the script pages via GraphQL and sleeps/retries on
+rate limits. A large fetch may take a few minutes.
+
+### Examples
+
+```bash
+# Both datasets for one person in one org
+.claude/skills/cv-achievements/fetch-prs.sh --author octocat --org acme
+
+# Only the "led" dataset
+.claude/skills/cv-achievements/fetch-prs.sh --author octocat --org acme --mode authored-all
+```
+
+## Step 2 — Generate bullets
+
+Ask Claude to use the `cv-achievements` skill and point it at one JSON file, e.g.:
+
+> Use the cv-achievements skill on `.cv-data/prs-authored.json`.
+
+The skill reads the `mode` field to pick the voice, analyzes the PRs, and prints
+5–6 candidate bullets. It does **not** edit your CV yet.
+
+## Step 3 — Insert into the CV
+
+Review/edit the bullets. On your approval, the skill invokes the `update-cv`
+skill to add them under the chosen job entry in `index.md` (branch → commit → PR).
+
+## Notes
+
+- Re-running a mode overwrites only its own JSON file.
+- `.cv-data/` is gitignored. Don't commit it.
+- Thin PR descriptions are kept as-is; significance is inferred from changed
+  files, diffstat, and commit messages. No PR text is sent to a second model.
+````
+
+- [ ] **Step 2: Confirm documented flags match the script**
+
+Run:
+```bash
+.claude/skills/cv-achievements/fetch-prs.sh --help
+```
+Expected: usage lists exactly `--author`, `--org`, `--mode`, `--out` — same as the README table. Fix either side if they drift.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add .claude/skills/cv-achievements/README.md
+git commit -m "docs: add cv-achievements README usage guide"
+```
+
+---
+
+## Task 7: End-to-end dry run
 
 **Files:** none (verification only)
 
