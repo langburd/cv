@@ -41,5 +41,58 @@ if [[ -n "$MODE" && "$MODE" != "authored-all" && "$MODE" != "reviewed" ]]; then
   exit 2
 fi
 
+# fetch_search QUERY_STRING
+# Pages a GraphQL `search(type: ISSUE)` over QUERY_STRING and prints a JSON array
+# of PR nodes (with diffstat, labels, files, commits). Rate-limit aware.
+fetch_search() {
+  local query="$1"
+  local cursor="null"
+  local has_next="true"
+  local all="[]"
+
+  local gql='
+    query($q: String!, $after: String) {
+      search(query: $q, type: ISSUE, first: 50, after: $after) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          ... on PullRequest {
+            number title body url state
+            createdAt mergedAt closedAt
+            additions deletions changedFiles
+            repository { nameWithOwner }
+            labels(first: 20) { nodes { name } }
+            files(first: 100) { nodes { path additions deletions } }
+            commits(first: 100) { nodes { commit { message } } }
+          }
+        }
+      }
+    }'
+
+  while [[ "$has_next" == "true" ]]; do
+    local resp
+    if ! resp=$(gh api graphql -f query="$gql" -f q="$query" \
+                  -F after="$cursor" 2>/tmp/fetch_prs_err); then
+      if grep -qiE 'rate limit|secondary' /tmp/fetch_prs_err; then
+        echo "Rate limited; sleeping 60s then retrying..." >&2
+        sleep 60
+        continue
+      fi
+      cat /tmp/fetch_prs_err >&2
+      return 1
+    fi
+
+    local nodes
+    nodes=$(jq '.data.search.nodes' <<<"$resp")
+    all=$(jq -s '.[0] + .[1]' <(echo "$all") <(echo "$nodes"))
+
+    has_next=$(jq -r '.data.search.pageInfo.hasNextPage' <<<"$resp")
+    cursor=$(jq -r '.data.search.pageInfo.endCursor' <<<"$resp")
+    [[ "$cursor" == "null" ]] && break
+  done
+
+  echo "$all"
+}
+
 mkdir -p "$OUT"
-echo "stub: author=$AUTHOR org=$ORG mode=${MODE:-both} out=$OUT" >&2
+# TEMP smoke driver — remove in Task 4
+fetch_search "is:pr author:$AUTHOR org:$ORG" | jq 'length'
