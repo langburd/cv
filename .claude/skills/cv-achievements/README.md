@@ -38,7 +38,10 @@ Output (gitignored, never committed) — files are scoped per org under `<out>/<
 - `.cv-data/<org>/prs-reviewed.json` — your merged PRs + PRs you reviewed → "participated" voice.
 
 Hundreds of PRs are fine — the script pages via GraphQL and sleeps/retries on
-rate limits. A large fetch may take a few minutes.
+rate limits (up to 5 attempts before giving up). A large fetch may take a few
+minutes. GitHub's search API caps any query at 1000 results; if a dataset hits
+that ceiling the script prints a `Warning: ... INCOMPLETE` line on stderr —
+narrow the query (e.g. by date range) if you see it.
 
 ### Examples
 
