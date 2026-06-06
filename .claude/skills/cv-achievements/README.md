@@ -30,7 +30,7 @@ JSON file — neither calls the other.
 | `--author` | yes | — | GitHub username to fetch PRs for |
 | `--org` | yes | — | GitHub org/owner to scope to |
 | `--mode` | no | both | `authored-all` or `reviewed`; omit for both |
-| `--out` | no | `.cv-data` | output base directory; files land under `<out>/<org>/` |
+| `--out` | no | `.cv-data` | output base directory; files land under `<out>/<org>/` (default `.cv-data/<org>/`) |
 
 Output (gitignored, never committed) — files are scoped per org under `<out>/<org>/`:
 

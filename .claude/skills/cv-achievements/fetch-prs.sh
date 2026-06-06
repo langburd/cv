@@ -50,7 +50,10 @@ if [[ -n "${MODE}" && "${MODE}" != "authored-all" && "${MODE}" != "reviewed" ]];
   exit 2
 fi
 
-# Max consecutive sleep-and-retry attempts on rate limits before giving up.
+# Max consecutive sleep-and-retry attempts (rate limits or transient errors)
+# before giving up. 5 covers a few back-to-back secondary-rate-limit windows
+# (~5 min of 60s sleeps) without hanging indefinitely; raise it for very large
+# orgs that rate-limit harder.
 MAX_RETRIES=5
 # GitHub's search API hard-caps any query at 1000 returned results.
 SEARCH_RESULT_CAP=1000

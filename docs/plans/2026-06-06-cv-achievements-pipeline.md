@@ -8,6 +8,13 @@
 
 **Tech Stack:** Bash, `gh` CLI (GraphQL API), `jq` for JSON shaping/validation. No test runtime in this repo (system Jekyll, no Gemfile/npm), so verification is shell-level: smoke-running the script against a real org/author and validating output with `jq`.
 
+> **Note:** This is the original point-in-time design plan. The shipped code is
+> authoritative — some details were revised during implementation (e.g. the
+> `write_dataset` signature, and the `reviewed` query, which became two separate
+> searches because GitHub PR search has no parenthesized `OR`). Read
+> `fetch-prs.sh` and `README.md` for current behavior; the code blocks below
+> reflect the initial plan, not the final implementation.
+
 ---
 
 ## File Structure
