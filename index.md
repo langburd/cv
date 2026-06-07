@@ -39,6 +39,14 @@ A self-motivated, creative problem solver, adept at quickly troubleshooting and 
 `2024 – Now`
 __Axonius__ – __Senior Cloud Infrastructure Engineer__
 
+- Architected and operated Axonius's Cloudflare zero-trust edge as code — provisioning Access policies, Gateway egress controls, WARP private-hostname blueprints, and DNS across production, management, and dev tenants via Terraform.
+- Designed and ran the company's Terraform Enterprise platform — managing workspaces through a TypeScript CDKTF application, enforcing change governance with Sentinel policy-as-code, and self-hosting the TFE application on dedicated EKS clusters across isolated dev, prod, and sandbox environments — GitOps-synced via ArgoCD, autoscaled, and secrets-integrated for high availability.
+- Built multi-cloud identity governance at scale — AWS SSO permission sets, customer-managed IAM policies, and least-privilege cross-account access alongside Azure Entra ID roles, RBAC groups, and landing-zone management groups and subscriptions for engineering, data, and security teams.
+- Automated a private container-image supply chain on ECR — managing repository provisioning, image lifecycle, and migration tooling across the registry.
+- Delivered data-platform infrastructure for the Datalake — EKS clusters, Airflow namespaces, and tiered S3 bucket access powering data-engineering and Bedrock RAG pipelines.
+- Maintained a shared Terraform module library underpinning the IaC estate, raising code consistency and quality with SDLC standards.
+- Served as a core reviewer for the infrastructure platform — vetting ~600 pull requests across the Terraform infrastructure, modules, policy, and tooling repositories to uphold change-quality and governance standards.
+
 `2024 – 2024`
 __Mend.io__ – __Senior DevSecOps Engineer__
 
