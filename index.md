@@ -62,7 +62,11 @@ __BigPanda__ – __Senior DevOps Engineer__ via Tikal
 - Working with globally distributed R&D teams.
 
 `2019 – 2024`
-__Tikal Knowledge__ (the outstaffing company) – __Senior DevOps Engineer__
+__Tikal Knowledge__ (Israel's leading hands-on tech consultancy — expert consultants who embed with client R&D teams) – __Senior DevOps Engineer__
+
+- Embedded as a senior DevOps consultant with client companies — most notably long-term engagements at Cyren and BigPanda (detailed below).
+- Beyond core placements, contributed to dozens of customer-facing projects — DevOps-oriented PoC/PoV engagements proving out cloud, CI/CD, and IaC solutions.
+- Consulted startups across all stages of company growth, from early-stage greenfield infrastructure to scaling production environments.
 
 `2019 – 2023`
 __Cyren__ – __Senior Production (DevOps) Engineer__ via Tikal
