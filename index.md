@@ -22,7 +22,7 @@ A self-motivated, creative problem solver, adept at quickly troubleshooting and 
 ## Technical knowledge and skills
 
 - Cloud Solution Architect for Microsoft Azure, Amazon Web Services, and Google Cloud Platform (GCP)
-- CI/CD: Git, Docker, Helm, Kubernetes, ArgoCD, Jenkins, GitLab CI, GitHub Actions, Artifactory
+- CI/CD: Git, Docker, Helm, Kubernetes, Argo CD, Jenkins, GitLab CI, GitHub Actions, Artifactory
 - Configuration management and IaC: extensive experience with Ansible, Terraform/Terragrunt, and CDKTF
 - Web/Proxy servers and load balancers: Nginx, Apache, HAProxy, Microsoft IIS, F5
 - Monitoring/Logging/APM: Prometheus, ELK Stack, Grafana, Zabbix, Logentries, New Relic, Xpolog
@@ -40,7 +40,7 @@ A self-motivated, creative problem solver, adept at quickly troubleshooting and 
 __Axonius__ – __Senior Cloud Infrastructure Engineer__
 
 - Architected and operated Axonius's Cloudflare zero-trust edge as code — provisioning Access policies, Gateway egress controls, WARP private-hostname blueprints, and DNS across production, management, and dev tenants via Terraform.
-- Designed and ran the company's Terraform Enterprise platform — managing workspaces through a TypeScript CDKTF application, enforcing change governance with Sentinel policy-as-code, and self-hosting the TFE application on dedicated EKS clusters across isolated dev, prod, and sandbox environments — GitOps-synced via ArgoCD, autoscaled, and secrets-integrated for high availability.
+- Designed and ran the company's Terraform Enterprise platform — managing workspaces through a TypeScript CDKTF application, enforcing change governance with Sentinel policy-as-code, and self-hosting the TFE application on dedicated EKS clusters across isolated dev, prod, and sandbox environments — GitOps-synced via Argo CD, autoscaled, and secrets-integrated for high availability.
 - Built multi-cloud identity governance at scale — AWS SSO permission sets, customer-managed IAM policies, and least-privilege cross-account access alongside Azure Entra ID roles, RBAC groups, and landing-zone management groups and subscriptions for engineering, data, and security teams.
 - Automated a private container-image supply chain on ECR — managing repository provisioning, image lifecycle, and migration tooling across the registry.
 - Delivered data-platform infrastructure for the Datalake — EKS clusters, Airflow namespaces, and tiered S3 bucket access powering data-engineering and Bedrock RAG pipelines.
@@ -58,7 +58,7 @@ __Mend.io__ – __Senior DevSecOps Engineer__
 __BigPanda__ – __Senior DevOps Engineer__ via Tikal
 
 - Migrating AWS serverless workloads from ClickOps to Infrastructure as Code using Terraform.
-- Creating the CI/CD processes for AWS serverless applications using TravisCI, Crossplane and ArgoCD.
+- Creating the CI/CD processes for AWS serverless applications using TravisCI, Crossplane, Argo Workflows, and Argo CD.
 - Working with globally distributed R&D teams.
 
 `2019 – 2024`
@@ -74,7 +74,7 @@ __Cyren__ – __Senior Production (DevOps) Engineer__ via Tikal
 - Leading the technological migration of the whole company’s infra from on-premises to AWS.
 - Architecting secured, isolated environments based on a multi-account model and using Infrastructure as Code (IaC).
 - Designing and building hybrid (public & private - AWS, Azure & oVirt) cloud environments.
-- Building GitOps CI/CD processes (GitLabCI & ArgoCD) for both infrastructure and data pipelines.
+- Building GitOps CI/CD processes (GitLab CI & Argo CD) for both infrastructure and data pipelines.
 - Managing dozens of highly available Kubernetes / Kafka / Elasticsearch / Hadoop clusters.
 - Working closely with the Data Warehouse R&D team.
 
