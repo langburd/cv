@@ -41,3 +41,7 @@ Push to `master` — GitHub Pages builds and deploys automatically via native Je
 - Do not add a Gemfile unless explicitly requested — the site intentionally runs on system Jekyll.
 - Do not modify `_layouts/cv.html` unless explicitly asked to change layout.
 - Do not add new files to the root unless they serve a clear purpose (the site is intentionally minimal).
+
+## Multi-Person Skill Usage
+
+Skills like `cv-achievements` may be run against GitHub users other than the repo owner. When processing any GitHub user **other than `langburd`**, do NOT invoke the `update-cv` skill — the resulting bullets are for a different person's CV, not this repository's `index.md`.
