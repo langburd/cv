@@ -40,7 +40,7 @@ A self-motivated problem solver who can explain the hard parts to both engineers
 `2024 – Now`
 __Axonius__ – __Senior Cloud Infrastructure Engineer__
 
-- Architected and operated Axonius's Cloudflare zero-trust edge as code — provisioning Access policies, Gateway egress controls, WARP private-hostname blueprints, and DNS across production, management, and dev tenants via Terraform.
+- Architecting and operating Axonius's Cloudflare zero-trust edge as code — provisioning Access policies, Gateway egress controls, WARP private-hostname blueprints, and DNS across production, management, and dev tenants via Terraform.
 - Designed and ran the company's Terraform Enterprise platform — managing workspaces through a TypeScript CDKTF application, enforcing change governance with Sentinel policy-as-code, and self-hosting the TFE application on dedicated EKS clusters across isolated dev, prod, and sandbox environments — GitOps-synced via Argo CD, autoscaled, and secrets-integrated for high availability.
 - Built multi-cloud identity governance at scale — AWS SSO permission sets, customer-managed IAM policies, and least-privilege cross-account access alongside Azure Entra ID roles, RBAC groups, and landing-zone management groups and subscriptions for engineering, data, and security teams.
 - Automated a private container-image supply chain on ECR — managing repository provisioning, image lifecycle, and migration tooling across the registry.
@@ -73,7 +73,7 @@ __Tikal Knowledge__ (Israel's leading hands-on tech consultancy — expert consu
 __Cyren__ – __Senior Production (DevOps) Engineer__ via Tikal
 
 - Leading the technological migration of the whole company’s infra from on-premises to AWS.
-- Architecting secure-by-design, isolated environments based on a multi-account model and using Infrastructure as Code (IaC).
+- Architected secure-by-design, isolated environments based on a multi-account model and using Infrastructure as Code (IaC).
 - Designing and building hybrid (public & private - AWS, Azure & oVirt) cloud environments, including the underlying networking and connectivity.
 - Building GitOps CI/CD processes (GitLab CI & Argo CD) for both infrastructure and data pipelines.
 - Managing dozens of highly available Kubernetes / Kafka / Elasticsearch / Hadoop clusters.
