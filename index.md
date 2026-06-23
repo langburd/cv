@@ -23,7 +23,7 @@ A self-motivated, creative problem solver who communicates complex technical con
 ## Technical knowledge and skills
 
 - IaC & Terraform (expert): Terraform/Terragrunt and CDKTF — module design and authoring, Sentinel policy-as-code, plus Ansible for configuration management
-- Programming & APIs: Python, Bash, PowerShell — codifying infrastructure and automating against cloud provider APIs
+- Programming & APIs: Python, Bash, PowerShell, TypeScript (CDKTF), with basic knowledge of Go — codifying infrastructure and automating against cloud provider APIs
 - Networking: low-level LAN/WAN/VLAN/WLAN architectures, routing, various VPN implementations, Cloudflare zero-trust edge, load balancers (Nginx, HAProxy, F5)
 - Cloud Solution Architect for Amazon Web Services, Microsoft Azure, and Google Cloud Platform (GCP)
 - Security & DevSecOps: secure-by-design architecture, least-privilege IAM/identity governance, multi-account isolation, PCI DSS compliance
