@@ -74,8 +74,24 @@ The PDF must look like the CV as a browser renders and prints it — the print s
 
 Use the `pdf` skill to produce the file, feeding it the print-rendered HTML:
 
-1. Build the site so `_site/index.html` exists (`jekyll build`).
-2. Render that page to PDF with the print CSS applied (print emulation, not screen), e.g. a headless-Chromium print-to-PDF of `http://localhost:4000` while `jekyll serve` is running, or of the built `_site/index.html`. The `pdf` skill covers the mechanics — point it at the rendered HTML page and the `langburd-print.css` print media.
+1. Build the site and start the Jekyll server (Chrome must print from a live HTTP server, not a file path):
+   ```bash
+   /opt/terraspace/embedded/bin/jekyll build
+   /opt/terraspace/embedded/bin/jekyll serve --detach --port 4000
+   sleep 2 && curl -s -o /dev/null -w "%{http_code}" http://localhost:4000  # verify 200
+   ```
+2. Print to PDF using Chrome headless with print media emulation. Use `--headless=new` and `--no-pdf-header-footer` — the older `--print-to-pdf-no-header` flag does not suppress headers/footers:
+   ```bash
+   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+     --headless=new --disable-gpu \
+     --no-pdf-header-footer \
+     --print-to-pdf="<output-path>.pdf" \
+     --virtual-time-budget=5000 \
+     --run-all-compositor-stages-before-draw \
+     --emulate-media="print" \
+     "http://localhost:4000"
+   pkill -f jekyll
+   ```
 3. Name the file `Avi_Langburd_CV_<year>[_<company>].pdf` — include the company suffix when the CV was tailored to a posting (e.g. `Avi_Langburd_CV_2026_Rapyd.pdf`), and omit it for a general update (`Avi_Langburd_CV_2026.pdf`).
 4. Save it to the repo root, then tell the user the path. The PDF is a generated artifact, so do not commit it (and don't let `git add .` sweep it in — `*.pdf` is not currently in `.gitignore`).
 
