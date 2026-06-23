@@ -4,7 +4,7 @@ title: Avi Langburd's CV
 ---
 # Avi Langburd
 
-Cloud & Security Architect · Multi-Cloud DevOps Expert · Kubernetes, IaC & GitOps Enthusiast · DevSecOps Practitioner
+Senior DevOps & Infrastructure Engineer · Terraform / IaC Expert · Cloud & Security Architect · Low-Level Networking · DevSecOps Practitioner
 
 <!-- <a href=""></a> -->
 
@@ -14,25 +14,26 @@ Phone: <a href="tel:+972548117417">+972548117417</a> | E-mail: <a href="mailto:a
 
 ## Summary and Expertise
 
-Highly skilled and experienced Cloud & Security Architect with a comprehensive understanding of the application lifecycle, multi-cloud technologies, operating systems, virtualization, networking, and security.<br>
-Proven track record of designing, planning, implementing, and managing efficient DevOps, DevSecOps, and cloud operations and processes.<br>
-With over a decade of industry experience, I bring a wealth of knowledge to drive innovative solutions.<br>
-A self-motivated, creative problem solver, adept at quickly troubleshooting and resolving complex issues.
+Senior DevOps & Infrastructure Engineer with over a decade of experience designing and leading infrastructure lifecycles in multi-cloud environments (AWS, Azure, GCP).<br>
+Advanced Terraform/IaC practitioner — I identify the patterns worth abstracting, build them into reusable modules, and take those modules all the way to production with policy-as-code governance.<br>
+Deep low-level networking background spanning LAN/WAN/VLAN, VPN, and zero-trust edge, paired with hands-on Python and API automation for codifying infrastructure.<br>
+Strong focus on secure-by-design systems and DevSecOps — including PCI DSS-compliant payment infrastructure — translating complex security and resilience requirements into actionable, scalable blueprints.<br>
+A self-motivated, creative problem solver who communicates complex technical concepts clearly to technical and non-technical audiences across globally distributed teams.
 
 ## Technical knowledge and skills
 
-- Cloud Solution Architect for Microsoft Azure, Amazon Web Services, and Google Cloud Platform (GCP)
-- CI/CD: Git, Docker, Helm, Kubernetes, Argo CD, Jenkins, GitLab CI, GitHub Actions, Artifactory
-- Configuration management and IaC: extensive experience with Ansible, Terraform/Terragrunt, and CDKTF
-- Web/Proxy servers and load balancers: Nginx, Apache, HAProxy, Microsoft IIS, F5
+- IaC & Terraform (expert): Terraform/Terragrunt and CDKTF — module design and authoring, Sentinel policy-as-code, plus Ansible for configuration management
+- Programming & APIs: Python, Bash, PowerShell — codifying infrastructure and automating against cloud provider APIs
+- Networking: low-level LAN/WAN/VLAN/WLAN architectures, routing, various VPN implementations, Cloudflare zero-trust edge, load balancers (Nginx, HAProxy, F5)
+- Cloud Solution Architect for Amazon Web Services, Microsoft Azure, and Google Cloud Platform (GCP)
+- Security & DevSecOps: secure-by-design architecture, least-privilege IAM/identity governance, multi-account isolation, PCI DSS compliance
+- CI/CD & GitOps: Git, Docker, Helm, Kubernetes, Argo CD, Jenkins, GitLab CI, GitHub Actions, Artifactory
 - Monitoring/Logging/APM: Prometheus, ELK Stack, Grafana, Zabbix, Logentries, New Relic, Xpolog
 - Databases: MS SQL, MySQL, MongoDB, Hadoop, Elasticsearch, InfluxDB
 - Messaging/Cache/Queues: Apache Kafka, RabbitMQ, Redis
 - Linux: extensive experience in administration of various OS flavors (CentOS, Ubuntu, etc.)
 - Windows Servers: broad knowledge in AD, GPO, DNS, DHCP and Windows internals
 - Virtualization: KVM-based (oVirt/Proxmox), VMware vSphere, Microsoft Hyper-V
-- Networking: LAN/WAN/VLAN/WLAN architectures, various VPN implementations, Cloudflare
-- Programming/script languages: Python, Bash, PowerShell
 
 ## Work Experience
 
@@ -44,7 +45,7 @@ __Axonius__ – __Senior Cloud Infrastructure Engineer__
 - Built multi-cloud identity governance at scale — AWS SSO permission sets, customer-managed IAM policies, and least-privilege cross-account access alongside Azure Entra ID roles, RBAC groups, and landing-zone management groups and subscriptions for engineering, data, and security teams.
 - Automated a private container-image supply chain on ECR — managing repository provisioning, image lifecycle, and migration tooling across the registry.
 - Delivered data-platform infrastructure for the Datalake — EKS clusters, Airflow namespaces, and tiered S3 bucket access powering data-engineering and Bedrock RAG pipelines.
-- Maintained a shared Terraform module library underpinning the IaC estate, raising code consistency and quality with SDLC standards.
+- Identified recurring IaC patterns and promoted them into a shared Terraform module library — designing, authoring, and shipping reusable modules all the way to production, underpinning the IaC estate and raising code consistency and quality with SDLC standards.
 - Served as a core reviewer for the infrastructure platform — vetting ~600 pull requests across the Terraform infrastructure, modules, policy, and tooling repositories to uphold change-quality and governance standards.
 
 `2024 – 2024`
@@ -72,17 +73,17 @@ __Tikal Knowledge__ (Israel's leading hands-on tech consultancy — expert consu
 __Cyren__ – __Senior Production (DevOps) Engineer__ via Tikal
 
 - Leading the technological migration of the whole company’s infra from on-premises to AWS.
-- Architecting secured, isolated environments based on a multi-account model and using Infrastructure as Code (IaC).
-- Designing and building hybrid (public & private - AWS, Azure & oVirt) cloud environments.
+- Architecting secure-by-design, isolated environments based on a multi-account model and using Infrastructure as Code (IaC).
+- Designing and building hybrid (public & private - AWS, Azure & oVirt) cloud environments, including the underlying networking and connectivity.
 - Building GitOps CI/CD processes (GitLab CI & Argo CD) for both infrastructure and data pipelines.
 - Managing dozens of highly available Kubernetes / Kafka / Elasticsearch / Hadoop clusters.
 - Working closely with the Data Warehouse R&D team.
 
 `2020 – 2021`
-__Fibonatix__ – __DevOps Tech Lead__
+__Fibonatix__ (payments / fintech) – __DevOps Tech Lead__
 
-- Designed and built a hybrid cloud infrastructure (AWS and Azure) from scratch using an IaC approach.
-- Aligned the networking, application, and infrastructure code into PCI DSS compliance.
+- Designed and built a hybrid cloud infrastructure (AWS and Azure) from scratch using an IaC approach for a global payments platform.
+- Architected secure-by-design networking and segmentation, aligning the networking, application, and infrastructure code into PCI DSS compliance.
 - Configured the full cycle CI/CD process, using GitLab, Jenkins, and Kubernetes.
 
 `2019 – 2019`
