@@ -2,3 +2,4 @@ _site/
 .sass-cache/
 docs/superpowers/
 .cv-data/
+*.pdf
