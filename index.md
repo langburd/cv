@@ -41,26 +41,26 @@ A self-motivated problem solver who can explain the hard parts to both engineers
 __Axonius__ – __Senior Cloud Infrastructure Engineer__
 
 - Architecting and operating Axonius's Cloudflare zero-trust edge as code — provisioning Access policies, Gateway egress controls, WARP private-hostname blueprints, and DNS across production, management, and dev tenants via Terraform.
-- Designed and ran the company's Terraform Enterprise platform — managing workspaces through a TypeScript CDKTF application, enforcing change governance with Sentinel policy-as-code, and self-hosting the TFE application on dedicated EKS clusters across isolated dev, prod, and sandbox environments — GitOps-synced via Argo CD, autoscaled, and secrets-integrated for high availability.
-- Built multi-cloud identity governance at scale — AWS SSO permission sets, customer-managed IAM policies, and least-privilege cross-account access alongside Azure Entra ID roles, RBAC groups, and landing-zone management groups and subscriptions for engineering, data, and security teams.
-- Automated a private container-image supply chain on ECR — managing repository provisioning, image lifecycle, and migration tooling across the registry.
-- Delivered data-platform infrastructure for the Datalake — EKS clusters, Airflow namespaces, and tiered S3 bucket access powering data-engineering and Bedrock RAG pipelines.
-- Spotted recurring IaC patterns and turned them into a shared Terraform module library, taking each module from first draft to production use across the IaC estate and raising code consistency and quality with SDLC standards.
-- Served as a core reviewer for the infrastructure platform — vetting ~600 pull requests across the Terraform infrastructure, modules, policy, and tooling repositories to uphold change-quality and governance standards.
+- Designing and running the company's Terraform Enterprise platform — managing workspaces through a TypeScript CDKTF application, enforcing change governance with Sentinel policy-as-code, and self-hosting the TFE application on dedicated EKS clusters across isolated dev, prod, and sandbox environments — GitOps-synced via Argo CD, autoscaled, and secrets-integrated for high availability.
+- Building multi-cloud identity governance at scale — AWS SSO permission sets, customer-managed IAM policies, and least-privilege cross-account access alongside Azure Entra ID roles, RBAC groups, and landing-zone management groups and subscriptions for engineering, data, and security teams.
+- Automating a private container-image supply chain on ECR — managing repository provisioning, image lifecycle, and migration tooling across the registry.
+- Delivering data-platform infrastructure for the Datalake — EKS clusters, Airflow namespaces, and tiered S3 bucket access powering data-engineering and Bedrock RAG pipelines.
+- Spotting recurring IaC patterns and turning them into a shared Terraform module library, taking each module from first draft to production use across the IaC estate and raising code consistency and quality with SDLC standards.
+- Serving as a core reviewer for the infrastructure platform — vetting ~600 pull requests across the Terraform infrastructure, modules, policy, and tooling repositories to uphold change-quality and governance standards.
 
 `2024 – 2024`
 __Mend.io__ – __Senior DevSecOps Engineer__
 
-- Ensuring security measures are in place for all company processes, including organizational, developmental, and infrastructure aspects.
-- Refactoring multi-cloud infrastructure (AWS and Azure) using Infrastructure as Code best practices.
-- Designing and implementing CI/CD pipelines for several products using GitHub Actions reusable workflows.
+- Ensured security measures were in place for all company processes, including organizational, developmental, and infrastructure aspects.
+- Refactored multi-cloud infrastructure (AWS and Azure) using Infrastructure as Code best practices.
+- Designed and implemented CI/CD pipelines for several products using GitHub Actions reusable workflows.
 
 `2023 – 2024`
 __BigPanda__ – __Senior DevOps Engineer__ via Tikal
 
-- Migrating AWS serverless workloads from ClickOps to Infrastructure as Code using Terraform.
-- Creating the CI/CD processes for AWS serverless applications using TravisCI, Crossplane, Argo Workflows, and Argo CD.
-- Working with globally distributed R&D teams.
+- Migrated AWS serverless workloads from ClickOps to Infrastructure as Code using Terraform.
+- Created the CI/CD processes for AWS serverless applications using TravisCI, Crossplane, Argo Workflows, and Argo CD.
+- Worked with globally distributed R&D teams.
 
 `2019 – 2024`
 __Tikal Knowledge__ (Israel's leading hands-on tech consultancy — expert consultants who embed with client R&D teams) – __Senior DevOps Engineer__
@@ -72,12 +72,12 @@ __Tikal Knowledge__ (Israel's leading hands-on tech consultancy — expert consu
 `2019 – 2023`
 __Cyren__ – __Senior Production (DevOps) Engineer__ via Tikal
 
-- Leading the technological migration of the whole company’s infra from on-premises to AWS.
+- Led the technological migration of the whole company’s infra from on-premises to AWS.
 - Architected secure-by-design, isolated environments based on a multi-account model and using Infrastructure as Code (IaC).
-- Designing and building hybrid (public & private - AWS, Azure & oVirt) cloud environments, including the underlying networking and connectivity.
-- Building GitOps CI/CD processes (GitLab CI & Argo CD) for both infrastructure and data pipelines.
-- Managing dozens of highly available Kubernetes / Kafka / Elasticsearch / Hadoop clusters.
-- Working closely with the Data Warehouse R&D team.
+- Designed and built hybrid (public & private - AWS, Azure & oVirt) cloud environments, including the underlying networking and connectivity.
+- Built GitOps CI/CD processes (GitLab CI & Argo CD) for both infrastructure and data pipelines.
+- Managed dozens of highly available Kubernetes / Kafka / Elasticsearch / Hadoop clusters.
+- Worked closely with the Data Warehouse R&D team.
 
 `2020 – 2021`
 __Fibonatix__ (payments / fintech) – __DevOps Tech Lead__
