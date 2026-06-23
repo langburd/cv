@@ -14,11 +14,11 @@ Phone: <a href="tel:+972548117417">+972548117417</a> | E-mail: <a href="mailto:a
 
 ## Summary and Expertise
 
-Senior DevOps & Infrastructure Engineer with over a decade of experience designing and leading infrastructure lifecycles in multi-cloud environments (AWS, Azure, GCP).<br>
-Advanced Terraform/IaC practitioner — I identify the patterns worth abstracting, build them into reusable modules, and take those modules all the way to production with policy-as-code governance.<br>
-Deep low-level networking background spanning LAN/WAN/VLAN, VPN, and zero-trust edge, paired with hands-on Python and API automation for codifying infrastructure.<br>
-Strong focus on secure-by-design systems and DevSecOps — including PCI DSS-compliant payment infrastructure — translating complex security and resilience requirements into actionable, scalable blueprints.<br>
-A self-motivated, creative problem solver who communicates complex technical concepts clearly to technical and non-technical audiences across globally distributed teams.
+Senior DevOps & Infrastructure Engineer with over a decade of experience running infrastructure lifecycles in multi-cloud environments (AWS, Azure, GCP).<br>
+I work Terraform hard: I spot the IaC that should become a module, write the module, and run it through policy-as-code governance into production.<br>
+Strong low-level networking background (LAN/WAN/VLAN, VPN, zero-trust edge), and I use Python and the cloud provider APIs to codify the rest.<br>
+I build secure by design, with real DevSecOps and PCI DSS-compliant payment infrastructure behind me, not just on paper.<br>
+A self-motivated problem solver who can explain the hard parts to both engineers and non-engineers, and who has done it across globally distributed teams.
 
 ## Technical knowledge and skills
 
@@ -45,7 +45,7 @@ __Axonius__ – __Senior Cloud Infrastructure Engineer__
 - Built multi-cloud identity governance at scale — AWS SSO permission sets, customer-managed IAM policies, and least-privilege cross-account access alongside Azure Entra ID roles, RBAC groups, and landing-zone management groups and subscriptions for engineering, data, and security teams.
 - Automated a private container-image supply chain on ECR — managing repository provisioning, image lifecycle, and migration tooling across the registry.
 - Delivered data-platform infrastructure for the Datalake — EKS clusters, Airflow namespaces, and tiered S3 bucket access powering data-engineering and Bedrock RAG pipelines.
-- Identified recurring IaC patterns and promoted them into a shared Terraform module library — designing, authoring, and shipping reusable modules all the way to production, underpinning the IaC estate and raising code consistency and quality with SDLC standards.
+- Spotted recurring IaC patterns and turned them into a shared Terraform module library, taking each module from first draft to production use across the IaC estate and raising code consistency and quality with SDLC standards.
 - Served as a core reviewer for the infrastructure platform — vetting ~600 pull requests across the Terraform infrastructure, modules, policy, and tooling repositories to uphold change-quality and governance standards.
 
 `2024 – 2024`
