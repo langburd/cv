@@ -3,3 +3,4 @@ _site/
 docs/superpowers/
 .cv-data/
 *.pdf
+temp/
