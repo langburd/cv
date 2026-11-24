@@ -12,11 +12,11 @@ Edit [`index.md`](index.md) directly — all content lives there.
 bundle exec jekyll serve
 ```
 
-Then open http://localhost:4000.
+Then open <http://localhost:4000>.
 
 ## Print to PDF
 
-Open http://localhost:4000 in browser, press `⌘P`. CSS print media queries handle styling.
+Open <http://localhost:4000> in browser, press `⌘P`. CSS print media queries handle styling.
 
 ## Styling
 
